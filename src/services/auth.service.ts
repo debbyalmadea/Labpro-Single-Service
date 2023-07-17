@@ -3,13 +3,14 @@ import { HttpError } from "../utils";
 import jwt from 'jsonwebtoken';
 import { accessTokenSecret } from "../configs";
 import { UserService } from ".";
+import { HttpStatusCode } from "axios";
 
 class AuthService {
     async logIn(username: string, password: string) {
         const user = await UserService.getUserByUsername(username);
 
         if (!user) {
-            throw new HttpError(401, 'User not found');
+            throw new HttpError(HttpStatusCode.NotFound, 'User not found');
         }
 
         const validPassword = await compare(
@@ -18,7 +19,7 @@ class AuthService {
         );
 
         if (!validPassword) {
-            throw new HttpError(400, 'Invalid password');
+            throw new HttpError(HttpStatusCode.Unauthorized, 'Invalid password');
         }
 
         const accessToken = jwt.sign(

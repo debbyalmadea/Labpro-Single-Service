@@ -1,4 +1,4 @@
-import { HttpStatusCode } from "axios";
+import { HttpStatusCode } from "../common/types/indes";
 
 class HttpError extends Error {
     statusCode: HttpStatusCode;

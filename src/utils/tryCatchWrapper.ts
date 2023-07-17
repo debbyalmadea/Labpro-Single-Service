@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import HttpError from "./httpError";
+import { HttpStatusCode } from "../common/types/indes";
 
 const tryCatchWrapper = (
     handler: (req: Request, res: Response) => Promise<Response>
@@ -17,7 +18,7 @@ const tryCatchWrapper = (
             });
           }
 
-          return res.status(500).json({
+          return res.status(HttpStatusCode.InternalServerError).json({
             status: 'error',
             message: 'Something went wrong while processing your request',
             data: null,

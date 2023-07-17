@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { PerusahaanService } from "../services";
+import { HttpStatusCode } from "../common/types/indes";
 
 class PerusahaanController {
     async getAllPerusahaan(req: Request, res: Response) {
@@ -7,7 +8,7 @@ class PerusahaanController {
 
         const perusahaanList = await PerusahaanService.searchPerusahaan(typeof q === 'string' ? q : "");
 
-        return res.status(200).json({
+        return res.status(HttpStatusCode.Accepted).json({
             status: 'success',
             message: "Successfully retrieved data",
             data: perusahaanList
@@ -20,14 +21,14 @@ class PerusahaanController {
         const perusahaan = await PerusahaanService.getPerusahaanById(id);
 
         if (!perusahaan) {
-            return res.status(404).json({
+            return res.status(HttpStatusCode.NotFound).json({
                 status: 'error',
                 message: "Perusahaan not found",
                 data: null
             })
         }
 
-        return res.status(200).json({
+        return res.status(HttpStatusCode.Accepted).json({
             status: 'success',
             message: "Successfully retrieved data",
             data: perusahaan
@@ -38,7 +39,7 @@ class PerusahaanController {
         const { nama, alamat, no_telp, kode } = req.body;
         const perusahaan = await PerusahaanService.createPerusahaan(nama, alamat, no_telp, kode);
 
-        return res.status(200).json({
+        return res.status(HttpStatusCode.Accepted).json({
             status: 'success',
             message: "Successfully created perusahaan",
             data: perusahaan
@@ -50,7 +51,7 @@ class PerusahaanController {
         const { id } = req.params
         const perusahaan = await PerusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode);
 
-        return res.status(200).json({
+        return res.status(HttpStatusCode.Accepted).json({
             status: 'success',
             message: "Successfully updated perusahaan",
             data: perusahaan
@@ -62,7 +63,7 @@ class PerusahaanController {
 
         const perusahaan = await PerusahaanService.deletePerusahaan(id);
 
-        return res.status(200).json({
+        return res.status(HttpStatusCode.Accepted).json({
             status: 'success',
             message: "Successfully deleted perusahaan",
             data: perusahaan

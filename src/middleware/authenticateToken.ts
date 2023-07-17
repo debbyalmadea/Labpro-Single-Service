@@ -1,13 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken'
 import { accessTokenSecret } from "../configs";
+import { HttpStatusCode } from "../common/types/indes";
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
         const token = authHeader;
 
         if (!token) {
-            return res.status(401).json({
+            return res.status(HttpStatusCode.Unauthorized).json({
                 status: "error",
                 message: "Unauthorized",
                 data: null
@@ -16,7 +17,7 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
 
         jwt.verify(token, accessTokenSecret, (err, username) => {
             if (err) {
-              return res.status(403).json({
+              return res.status(HttpStatusCode.Forbidden).json({
                 status: "error",
                 message: "Forbidden",
                 data: null

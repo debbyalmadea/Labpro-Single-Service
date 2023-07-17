@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { BarangService } from "../services";
+import { HttpStatusCode } from "../common/types/indes";
 
 class BarangController {
     async getAllBarang(req: Request, res: Response) {
@@ -10,7 +11,7 @@ class BarangController {
             typeof perusahaan === 'string' ? perusahaan : ""
         );
 
-        return res.status(200).json({
+        return res.status(HttpStatusCode.Accepted).json({
             status: 'success',
             message: "Successfully retrieved data",
             data: barangList
@@ -23,14 +24,14 @@ class BarangController {
         const barang = await BarangService.getBarangById(id);
 
         if (!barang) {
-            return res.status(404).json({
+            return res.status(HttpStatusCode.NotFound).json({
                 status: 'error',
                 message: "Barang not found",
                 data: null
             })
         }
 
-        return res.status(200).json({
+        return res.status(HttpStatusCode.Accepted).json({
             status: 'success',
             message: "Successfully retrieved data",
             data: barang
@@ -41,7 +42,7 @@ class BarangController {
         const { nama, harga, stok, perusahaan_id, kode } = req.body;
         const barang = await BarangService.createBarang(nama, harga, stok, perusahaan_id, kode);
 
-        return res.status(200).json({
+        return res.status(HttpStatusCode.Accepted).json({
             status: 'success',
             message: "Successfully created Barang",
             data: barang
@@ -53,7 +54,7 @@ class BarangController {
         const { id } = req.params
         const barang = await BarangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode);
 
-        return res.status(200).json({
+        return res.status(HttpStatusCode.Accepted).json({
             status: 'success',
             message: "Successfully updated Barang",
             data: barang
@@ -65,7 +66,7 @@ class BarangController {
 
         const barang = await BarangService.deleteBarang(id);
 
-        return res.status(200).json({
+        return res.status(HttpStatusCode.Accepted).json({
             status: 'success',
             message: "Successfully deleted Barang",
             data: barang
@@ -78,7 +79,7 @@ class BarangController {
 
         const barang = await BarangService.updateStokBarang(id, stok_baru);
 
-        return res.status(200).json({
+        return res.status(HttpStatusCode.Accepted).json({
             status: 'success',
             message: "Successfully updated stok",
             data: barang

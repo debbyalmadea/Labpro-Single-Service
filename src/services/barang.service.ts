@@ -1,4 +1,5 @@
 import { PerusahaanService } from ".";
+import { HttpStatusCode } from "../common/types/indes";
 import { Barang } from "../models";
 import { HttpError } from "../utils";
 
@@ -64,7 +65,7 @@ class BarangService {
         const perusahaan = await PerusahaanService.getPerusahaanById(perusahaan_id);
         
         if (!perusahaan) {
-            throw new HttpError(404, 'Perusahaan not found', null);
+            throw new HttpError(HttpStatusCode.NotFound, 'Perusahaan not found', null);
         }
 
         const createdBarang = await Barang.create({
@@ -92,7 +93,7 @@ class BarangService {
         const perusahaan = await PerusahaanService.getPerusahaanById(perusahaan_id);
         
         if (!perusahaan) {
-            throw new HttpError(404, 'Perusahaan not found', null);
+            throw new HttpError(HttpStatusCode.NotFound, 'Perusahaan not found', null);
         }
 
         const updatedBarang = await Barang.update({
