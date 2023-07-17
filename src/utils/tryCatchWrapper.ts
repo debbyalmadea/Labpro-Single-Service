@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import HttpError from "./httpError";
-import { HttpStatusCode } from "../common/types/indes";
+import { HttpStatusCode } from "../common/types";
 
 const tryCatchWrapper = (
     handler: (req: Request, res: Response) => Promise<Response>

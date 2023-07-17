@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { UserService } from "../services";
-import { HttpStatusCode } from "../common/types/indes";
+import { HttpStatusCode } from "../common/types";
 
 class UserController {
     async getSelfDetail(req: Request, res: Response) {

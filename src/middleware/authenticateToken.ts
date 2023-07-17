@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken'
 import { accessTokenSecret } from "../configs";
-import { HttpStatusCode } from "../common/types/indes";
+import { HttpStatusCode } from "../common/types";
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;

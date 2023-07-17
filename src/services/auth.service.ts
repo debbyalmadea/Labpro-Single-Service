@@ -3,7 +3,7 @@ import { HttpError } from "../utils";
 import jwt from 'jsonwebtoken';
 import { accessTokenSecret } from "../configs";
 import { UserService } from ".";
-import { HttpStatusCode } from "axios";
+import { HttpStatusCode } from "../common/types";
 
 class AuthService {
     async logIn(username: string, password: string) {

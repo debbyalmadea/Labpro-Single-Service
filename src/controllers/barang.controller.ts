@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { BarangService } from "../services";
-import { HttpStatusCode } from "../common/types/indes";
+import { HttpStatusCode } from "../common/types";
 
 class BarangController {
     async getAllBarang(req: Request, res: Response) {

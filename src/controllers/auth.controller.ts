@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AuthService } from "../services";
-import { HttpStatusCode } from "../common/types/indes";
+import { HttpStatusCode } from "../common/types";
 
 class AuthController {
     async logIn(req: Request, res: Response) {

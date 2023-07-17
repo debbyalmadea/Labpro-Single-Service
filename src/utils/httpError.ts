@@ -1,4 +1,4 @@
-import { HttpStatusCode } from "../common/types/indes";
+import { HttpStatusCode } from "../common/types";
 
 class HttpError extends Error {
     statusCode: HttpStatusCode;

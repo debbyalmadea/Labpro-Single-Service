@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { PerusahaanService } from "../services";
-import { HttpStatusCode } from "../common/types/indes";
+import { HttpStatusCode } from "../common/types";
 
 class PerusahaanController {
     async getAllPerusahaan(req: Request, res: Response) {

@@ -1,5 +1,5 @@
 import { PerusahaanService } from ".";
-import { HttpStatusCode } from "../common/types/indes";
+import { HttpStatusCode } from "../common/types";
 import { Barang } from "../models";
 import { HttpError } from "../utils";
 
