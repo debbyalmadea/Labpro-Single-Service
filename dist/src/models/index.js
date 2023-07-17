@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Perusahaan = exports.Barang = exports.User = void 0;
+const utils_1 = require("../utils");
+const User = utils_1.prisma.user;
+exports.User = User;
+const Barang = utils_1.prisma.barang;
+exports.Barang = Barang;
+const Perusahaan = utils_1.prisma.perusahaan;
+exports.Perusahaan = Perusahaan;
