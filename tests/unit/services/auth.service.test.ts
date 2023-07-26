@@ -1,5 +1,11 @@
 
 import jwt, { Secret, SignOptions } from 'jsonwebtoken';
+import { compare } from 'bcryptjs';
+import { AuthService, UserService } from '../../../src/services';
+import { HttpError } from '../../../src/utils';
+import { HttpStatusCode } from '../../../src/common/types';
+import { User } from '../../../src/models';
+
 jest.mock('jsonwebtoken');
 
 type JwtSignMockedType =(
@@ -10,15 +16,12 @@ type JwtSignMockedType =(
   
 const jwtSignMock = jwt.sign as unknown as jest.MockedFunction<JwtSignMockedType>;
 
-import { compare } from 'bcryptjs';
 jest.mock('bcryptjs'); 
 const compareMock = compare as jest.MockedFunction<(s: string, hash: string) => Promise<boolean>>;
 
-import { AuthService, UserService } from '../../../src/services';
-const getUserByUsernameMock = jest.spyOn(UserService, 'getUserByUsername');
-
-import { HttpError } from '../../../src/utils';
-import { HttpStatusCode } from '../../../src/common/types';
+const userService = new UserService(User);
+const getUserByUsernameMock = jest.spyOn(userService, 'getUserByUsername');
+const authService = new AuthService(userService);
 
 describe('Auth Service', () => {
   afterEach(() => {
@@ -41,7 +44,7 @@ describe('Auth Service', () => {
       compareMock.mockResolvedValue(true);
       jwtSignMock.mockReturnValue('mockedAccessToken')
   
-      const result = await AuthService.logIn(username, password);
+      const result = await authService.logIn(username, password);
     
       expect(result).toEqual({
         user: {
@@ -56,9 +59,11 @@ describe('Auth Service', () => {
       const username = 'nonexistentuser';
       const password = 'testpassword';
   
-      getUserByUsernameMock.mockResolvedValue(null);
+      getUserByUsernameMock.mockImplementation(() => {
+        throw new HttpError(HttpStatusCode.NotFound, "User not found")
+      });
   
-      await expect(AuthService.logIn(username, password)).rejects.toThrow(
+      await expect(authService.logIn(username, password)).rejects.toThrow(
         new HttpError(HttpStatusCode.NotFound, 'User not found')
       );
     });
@@ -78,7 +83,7 @@ describe('Auth Service', () => {
       getUserByUsernameMock.mockResolvedValue(mockUser);
       compareMock.mockResolvedValue(false);
   
-      await expect(AuthService.logIn(username, password)).rejects.toThrow(
+      await expect(authService.logIn(username, password)).rejects.toThrow(
         new HttpError(HttpStatusCode.Unauthorized, 'Invalid password')
       );
     });

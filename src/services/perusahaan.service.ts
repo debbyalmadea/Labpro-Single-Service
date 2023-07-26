@@ -1,11 +1,16 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { HttpStatusCode } from "../common/types";
-import { Perusahaan } from "../models";
+import { HttpStatusCode, IPerusahaanService, PerusahaanModel } from "../common/types";
 import { HttpError } from "../utils";
 
-class PerusahaanService {
+class PerusahaanService implements IPerusahaanService {
+    private perusahaanModel: PerusahaanModel;
+
+    constructor(perusahaanModel: PerusahaanModel) {
+        this.perusahaanModel = perusahaanModel;
+    }
+
     async getAllPerusahaan() {
-        return await Perusahaan.findMany({
+        return await this.perusahaanModel.findMany({
             select: {
                 id: true,
                 nama: true,
@@ -22,7 +27,7 @@ class PerusahaanService {
     }
 
     async filterPerusahaan(q?: string) {
-        const perusahaanList = await Perusahaan.findMany({
+        const perusahaanList = await this.perusahaanModel.findMany({
             where: {
                 OR: [
                     {
@@ -57,7 +62,7 @@ class PerusahaanService {
     }
 
     async getPerusahaanById(id: string) {
-        const perusahaan = await Perusahaan.findFirst({
+        const perusahaan = await this.perusahaanModel.findFirst({
             where: {
                 id: id
             },
@@ -83,7 +88,7 @@ class PerusahaanService {
             throw new HttpError(HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null);
         }
 
-        const createdPerusahaan = await Perusahaan.create({
+        const createdPerusahaan = await this.perusahaanModel.create({
             data: {
                 nama: nama,
                 alamat: alamat,
@@ -109,7 +114,7 @@ class PerusahaanService {
         }
 
         try {
-            const updatedPerusahaan = await Perusahaan.update({
+            const updatedPerusahaan = await this.perusahaanModel.update({
                 where: {
                     id: id
                 },
@@ -133,12 +138,14 @@ class PerusahaanService {
             if (error instanceof PrismaClientKnownRequestError) {
                 throw new HttpError(HttpStatusCode.BadRequest, 'Perusahaan not found');
             }
+
+            throw new HttpError(HttpStatusCode.InternalServerError, 'Something is wrong while processing your request');
         }
     }
 
     async deletePerusahaan(id: string) {
         try {
-            const deletedPerusahaan = await Perusahaan.delete({
+            const deletedPerusahaan = await this.perusahaanModel.delete({
                 where: {
                     id: id,
                 },
@@ -156,8 +163,10 @@ class PerusahaanService {
             if (error instanceof PrismaClientKnownRequestError) {
                 throw new HttpError(HttpStatusCode.BadRequest, 'Perusahaan not found');
             }
+
+            throw new HttpError(HttpStatusCode.InternalServerError, 'Something is wrong while processing your request');
         }
     }   
 }
 
-export default new PerusahaanService();
+export default PerusahaanService;

@@ -1,12 +1,18 @@
-import { PerusahaanService } from ".";
-import { HttpStatusCode } from "../common/types";
-import { Barang } from "../models";
+import { BarangModel, HttpStatusCode, IBarangService, IPerusahaanService } from "../common/types";
 import { HttpError } from "../utils";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
-class BarangService {
+class BarangService implements IBarangService {
+    private barangModel: BarangModel;
+    private perusahaanService: IPerusahaanService;
+
+    constructor(barangModel: BarangModel, perusahaanService: IPerusahaanService) {
+        this.barangModel = barangModel;
+        this.perusahaanService = perusahaanService;
+    }
+
     async getAllBarang() {
-        return await Barang.findMany({
+        return await this.barangModel.findMany({
             select: {
                 id: true,
                 nama: true,
@@ -24,7 +30,7 @@ class BarangService {
     }
 
     async filterBarang(q?: string, perusahaan_id?: string) {
-        const barangList = await Barang.findMany({
+        const barangList = await this.barangModel.findMany({
             where: {
                 OR: [
                     {
@@ -63,7 +69,7 @@ class BarangService {
     }
     
     async getBarangById(id: string) {
-        const barang = await Barang.findFirst({
+        const barang = await this.barangModel.findFirst({
             where: {
                 id: id
             },
@@ -91,13 +97,13 @@ class BarangService {
             throw new HttpError(HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null);
         }
         
-        const perusahaan = await PerusahaanService.getPerusahaanById(perusahaan_id);
+        const perusahaan = await this.perusahaanService.getPerusahaanById(perusahaan_id);
         
         if (!perusahaan) {
             throw new HttpError(HttpStatusCode.NotFound, 'Perusahaan not found', null);
         }
 
-        const createdBarang = await Barang.create({
+        const createdBarang = await this.barangModel.create({
             data: {
                 nama: nama,
                 harga: harga,
@@ -124,14 +130,14 @@ class BarangService {
             throw new HttpError(HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null);
         }
 
-        const perusahaan = await PerusahaanService.getPerusahaanById(perusahaan_id);
+        const perusahaan = await this.perusahaanService.getPerusahaanById(perusahaan_id);
         
         if (!perusahaan) {
             throw new HttpError(HttpStatusCode.NotFound, 'Perusahaan not found', null);
         }
 
         try {
-            const updatedBarang = await Barang.update({
+            const updatedBarang = await this.barangModel.update({
                 where: {
                     id: id
                 },
@@ -157,12 +163,14 @@ class BarangService {
             if (error instanceof PrismaClientKnownRequestError) {
                 throw new HttpError(HttpStatusCode.BadRequest, 'Barang not found');
             }
+
+            throw new HttpError(HttpStatusCode.InternalServerError, 'Something is wrong while processing your request');
         }
     }
 
     async deleteBarang(id: string) {
         try {
-            const deletedBarang = await Barang.delete({
+            const deletedBarang = await this.barangModel.delete({
                 where: {
                     id: id,
                 },
@@ -181,12 +189,14 @@ class BarangService {
             if (error instanceof PrismaClientKnownRequestError) {
                 throw new HttpError(HttpStatusCode.BadRequest, 'Barang not found');
             }
+
+            throw new HttpError(HttpStatusCode.InternalServerError, 'Something is wrong while processing your request');
         }
     }   
 
     async decreaseStokBarang(id: string, stok: number) {
         try {
-            const updatedBarang = await Barang.update({
+            const updatedBarang = await this.barangModel.update({
                 where: {
                     id: id
                 },
@@ -210,8 +220,10 @@ class BarangService {
             if (error instanceof PrismaClientKnownRequestError) {
                 throw new HttpError(HttpStatusCode.BadRequest, 'Barang not found');
             }
+
+            throw new HttpError(HttpStatusCode.InternalServerError, 'Something is wrong while processing your request');
         }
     }
 }
 
-export default new BarangService();
+export default BarangService;

@@ -9,13 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const services_1 = require("../services");
 const utils_1 = require("../utils");
 class PerusahaanController {
+    constructor(perusahaanService) {
+        this.perusahaanService = perusahaanService;
+    }
     getAllPerusahaan(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { q } = req.query;
-            const perusahaanList = yield services_1.PerusahaanService.filterPerusahaan(typeof q === 'string' ? q : "");
+            const perusahaanList = yield this.perusahaanService.filterPerusahaan(typeof q === 'string' ? q : "");
             return (new utils_1.JsonResponse(res))
                 .success()
                 .withData(perusahaanList)
@@ -25,7 +27,7 @@ class PerusahaanController {
     getPerusahaanById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const perusahaan = yield services_1.PerusahaanService.getPerusahaanById(id);
+            const perusahaan = yield this.perusahaanService.getPerusahaanById(id);
             const jsonResponse = new utils_1.JsonResponse(res);
             return jsonResponse
                 .success()
@@ -36,7 +38,7 @@ class PerusahaanController {
     createPerusahaan(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { nama, alamat, no_telp, kode } = req.body;
-            const perusahaan = yield services_1.PerusahaanService.createPerusahaan(nama, alamat, no_telp, kode);
+            const perusahaan = yield this.perusahaanService.createPerusahaan(nama, alamat, no_telp, kode);
             return (new utils_1.JsonResponse(res))
                 .success()
                 .withData(perusahaan)
@@ -47,7 +49,7 @@ class PerusahaanController {
         return __awaiter(this, void 0, void 0, function* () {
             const { nama, alamat, no_telp, kode } = req.body;
             const { id } = req.params;
-            const perusahaan = yield services_1.PerusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode);
+            const perusahaan = yield this.perusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode);
             return (new utils_1.JsonResponse(res))
                 .success()
                 .withData(perusahaan)
@@ -57,7 +59,7 @@ class PerusahaanController {
     deletePerusahaan(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const perusahaan = yield services_1.PerusahaanService.deletePerusahaan(id);
+            const perusahaan = yield this.perusahaanService.deletePerusahaan(id);
             return (new utils_1.JsonResponse(res))
                 .success()
                 .withData(perusahaan)
@@ -65,4 +67,4 @@ class PerusahaanController {
         });
     }
 }
-exports.default = new PerusahaanController();
+exports.default = PerusahaanController;

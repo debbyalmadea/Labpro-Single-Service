@@ -11,6 +11,8 @@ const mockedPerusahaanCreate = Perusahaan.create as jest.MockedFunction<typeof P
 const mockedPerusahaanUpdate = Perusahaan.update as jest.MockedFunction<typeof Perusahaan.update>;
 const mockedPerusahaanDelete = Perusahaan.delete as jest.MockedFunction<typeof Perusahaan.delete>;
 
+let perusahaanService = new PerusahaanService(Perusahaan);
+
 const mockPerusahaanList = [
     {
         "id": "clk75yk1k0004wh1in65b2rgz",
@@ -61,6 +63,7 @@ const mockPerusahaanList = [
 
 describe('Perusahaan Service', () => {
   afterEach(() => {
+    perusahaanService = new PerusahaanService(Perusahaan);
     jest.clearAllMocks(); 
   });
 
@@ -68,7 +71,7 @@ describe('Perusahaan Service', () => {
     it('should return all perusahaan with selected attributes ordered by name in ascending order', async () => {
         mockedPerusahaanFindMany.mockResolvedValue(mockPerusahaanList);
         
-        const result = await PerusahaanService.getAllPerusahaan();
+        const result = await perusahaanService.getAllPerusahaan();
     
         expect(mockedPerusahaanFindMany).toHaveBeenCalledWith({
             select: {
@@ -93,7 +96,7 @@ describe('Perusahaan Service', () => {
     it('should return all perusahaan with selected attributes ordered by name in ascending order when provided with undefined query', async () => {
         mockedPerusahaanFindMany.mockResolvedValue(mockPerusahaanList);
         
-        const result = await PerusahaanService.filterPerusahaan();
+        const result = await perusahaanService.filterPerusahaan();
     
         expect(mockedPerusahaanFindMany).toHaveBeenCalledWith({
             where: {
@@ -144,7 +147,7 @@ describe('Perusahaan Service', () => {
         ];
         mockedPerusahaanFindMany.mockResolvedValue(_mockPerusahaanList);
         
-        const result = await PerusahaanService.filterPerusahaan(query);
+        const result = await perusahaanService.filterPerusahaan(query);
     
         expect(mockedPerusahaanFindMany).toHaveBeenCalledWith({
             where: {
@@ -195,7 +198,7 @@ describe('Perusahaan Service', () => {
         ];
         mockedPerusahaanFindMany.mockResolvedValue(_mockPerusahaanList);
         
-        const result = await PerusahaanService.filterPerusahaan(query);
+        const result = await perusahaanService.filterPerusahaan(query);
     
         expect(mockedPerusahaanFindMany).toHaveBeenCalledWith({
             where: {
@@ -247,7 +250,7 @@ describe('Perusahaan Service', () => {
 
         mockedPerusahaanFindFirst.mockResolvedValue(mockPerusahaan);
 
-        const result = await PerusahaanService.getPerusahaanById(id);
+        const result = await perusahaanService.getPerusahaanById(id);
 
         expect(mockedPerusahaanFindFirst).toHaveBeenCalledWith({
             where: {
@@ -270,7 +273,7 @@ describe('Perusahaan Service', () => {
 
         mockedPerusahaanFindFirst.mockResolvedValue(null);
 
-        await expect(PerusahaanService.getPerusahaanById(id)).rejects.toThrow(
+        await expect(perusahaanService.getPerusahaanById(id)).rejects.toThrow(
             new HttpError(HttpStatusCode.NotFound, 'Perusahaan not found')
           );
       
@@ -308,7 +311,7 @@ describe('Perusahaan Service', () => {
     
         mockedPerusahaanCreate.mockResolvedValue(mockCreatedPerusahaan);
     
-        const result = await PerusahaanService.createPerusahaan(nama, alamat, no_telp, kode);
+        const result = await perusahaanService.createPerusahaan(nama, alamat, no_telp, kode);
     
         expect(mockedPerusahaanCreate).toHaveBeenCalledTimes(1);
         expect(mockedPerusahaanCreate).toHaveBeenCalledWith({
@@ -336,7 +339,7 @@ describe('Perusahaan Service', () => {
         const no_telp = '123456789';
         const kode = 'abc';
     
-        await expect(PerusahaanService.createPerusahaan(nama, alamat, no_telp, kode)).rejects.toThrow(
+        await expect(perusahaanService.createPerusahaan(nama, alamat, no_telp, kode)).rejects.toThrow(
           new HttpError(HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null)
         );
         
@@ -364,7 +367,7 @@ describe('Perusahaan Service', () => {
         
         mockedPerusahaanUpdate.mockResolvedValue(mockUpdatedPerusahaan);
     
-        const result = await PerusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode);
+        const result = await perusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode);
     
         expect(mockedPerusahaanUpdate).toHaveBeenCalledTimes(1);
         expect(mockedPerusahaanUpdate).toHaveBeenCalledWith({
@@ -396,7 +399,7 @@ describe('Perusahaan Service', () => {
         const no_telp = '123456789';
         const kode = 'AS3';
     
-        await expect(PerusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode)).rejects.toThrow(
+        await expect(perusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode)).rejects.toThrow(
           new HttpError(HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null)
         );
         
@@ -414,7 +417,7 @@ describe('Perusahaan Service', () => {
             throw new PrismaClientKnownRequestError('Perusahaan not found', {clientVersion: 'v1.0', code: '400'});
         })
     
-        await expect(PerusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode)).rejects.toThrow(
+        await expect(perusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode)).rejects.toThrow(
           new HttpError(HttpStatusCode.NotFound, 'Perusahaan not found', null)
         );
     
@@ -456,7 +459,7 @@ describe('Perusahaan Service', () => {
     
         mockedPerusahaanDelete.mockResolvedValue(mockDeletedPerusahaan);
     
-        const result = await PerusahaanService.deletePerusahaan(id);
+        const result = await perusahaanService.deletePerusahaan(id);
     
         expect(mockedPerusahaanDelete).toHaveBeenCalledTimes(1);
         expect(mockedPerusahaanDelete).toHaveBeenCalledWith({
@@ -482,7 +485,7 @@ describe('Perusahaan Service', () => {
             throw new PrismaClientKnownRequestError('Perusahaan not found', {clientVersion: 'v1.0', code: '400'});
         })
     
-        await expect(PerusahaanService.deletePerusahaan(id)).rejects.toThrow(
+        await expect(perusahaanService.deletePerusahaan(id)).rejects.toThrow(
           new HttpError(HttpStatusCode.NotFound, 'Perusahaan not found', null)
         );
     

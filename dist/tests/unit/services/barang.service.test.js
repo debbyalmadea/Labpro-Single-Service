@@ -14,13 +14,15 @@ const types_1 = require("../../../src/common/types");
 const models_1 = require("../../../src/models");
 const services_1 = require("../../../src/services");
 const utils_1 = require("../../../src/utils");
-const mockedGetPerusahaanById = jest.spyOn(services_1.PerusahaanService, 'getPerusahaanById');
+const perusahaanService = new services_1.PerusahaanService(models_1.Perusahaan);
+const mockedGetPerusahaanById = jest.spyOn(perusahaanService, 'getPerusahaanById');
 jest.mock("../../../src/models");
 const mockedBarangFindMany = models_1.Barang.findMany;
 const mockedBarangFindFirst = models_1.Barang.findFirst;
 const mockedBarangCreate = models_1.Barang.create;
 const mockedBarangUpdate = models_1.Barang.update;
 const mockedBarangDelete = models_1.Barang.delete;
+let barangService = new services_1.BarangService(models_1.Barang, perusahaanService);
 const mockBarangList = [
     {
         "id": "clk77y21e000eof62kwb4bdhl",
@@ -85,12 +87,13 @@ const mockBarangList = [
 ];
 describe('Barang Service', () => {
     afterEach(() => {
+        barangService = new services_1.BarangService(models_1.Barang, perusahaanService);
         jest.clearAllMocks();
     });
     describe('getAllBarang', () => {
         it('should return all barang with selected attributes ordered by name in ascending order', () => __awaiter(void 0, void 0, void 0, function* () {
             mockedBarangFindMany.mockResolvedValue(mockBarangList);
-            const result = yield services_1.BarangService.getAllBarang();
+            const result = yield barangService.getAllBarang();
             expect(mockedBarangFindMany).toHaveBeenCalledWith({
                 select: {
                     id: true,
@@ -112,7 +115,7 @@ describe('Barang Service', () => {
     describe('filterBarang', () => {
         it('should return all barang with selected attributes ordered by name in ascending order when provided with undefined query and company', () => __awaiter(void 0, void 0, void 0, function* () {
             mockedBarangFindMany.mockResolvedValue(mockBarangList);
-            const result = yield services_1.BarangService.filterBarang();
+            const result = yield barangService.filterBarang();
             expect(mockedBarangFindMany).toHaveBeenCalledWith({
                 where: {
                     OR: [
@@ -174,7 +177,7 @@ describe('Barang Service', () => {
                 }
             ];
             mockedBarangFindMany.mockResolvedValue(_mockBarangList);
-            const result = yield services_1.BarangService.filterBarang(query);
+            const result = yield barangService.filterBarang(query);
             expect(mockedBarangFindMany).toHaveBeenCalledWith({
                 where: {
                     OR: [
@@ -226,7 +229,7 @@ describe('Barang Service', () => {
                 }
             ];
             mockedBarangFindMany.mockResolvedValue(_mockBarangList);
-            const result = yield services_1.BarangService.filterBarang(query);
+            const result = yield barangService.filterBarang(query);
             expect(mockedBarangFindMany).toHaveBeenCalledWith({
                 where: {
                     OR: [
@@ -278,7 +281,7 @@ describe('Barang Service', () => {
                 }
             ];
             mockedBarangFindMany.mockResolvedValue(_mockBarangList);
-            const result = yield services_1.BarangService.filterBarang(undefined, 'clk77y1zt0001of62mbhuhohv');
+            const result = yield barangService.filterBarang(undefined, 'clk77y1zt0001of62mbhuhohv');
             expect(mockedBarangFindMany).toHaveBeenCalledWith({
                 where: {
                     OR: [
@@ -330,7 +333,7 @@ describe('Barang Service', () => {
                 updated_at: new Date(),
             };
             mockedBarangFindFirst.mockResolvedValue(mockBarang);
-            const result = yield services_1.BarangService.getBarangById(id);
+            const result = yield barangService.getBarangById(id);
             expect(mockedBarangFindFirst).toHaveBeenCalledWith({
                 where: {
                     id: id
@@ -349,7 +352,7 @@ describe('Barang Service', () => {
         it('should throw an error when ID does not exist', () => __awaiter(void 0, void 0, void 0, function* () {
             const id = 'unknownid';
             mockedBarangFindFirst.mockResolvedValue(null);
-            yield expect(services_1.BarangService.getBarangById(id)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Barang not found'));
+            yield expect(barangService.getBarangById(id)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Barang not found'));
             expect(mockedBarangFindFirst).toHaveBeenCalledWith({
                 where: {
                     id: id
@@ -391,7 +394,7 @@ describe('Barang Service', () => {
             };
             mockedGetPerusahaanById.mockResolvedValue(mockPerusahaan);
             mockedBarangCreate.mockResolvedValue(mockCreatedBarang);
-            const result = yield services_1.BarangService.createBarang(nama, harga, stok, perusahaan_id, kode);
+            const result = yield barangService.createBarang(nama, harga, stok, perusahaan_id, kode);
             expect(mockedGetPerusahaanById).toHaveBeenCalledTimes(1);
             expect(mockedGetPerusahaanById).toHaveBeenCalledWith(perusahaan_id);
             expect(mockedBarangCreate).toHaveBeenCalledTimes(1);
@@ -420,7 +423,7 @@ describe('Barang Service', () => {
             const stok = 20;
             const perusahaan_id = 'perusahaan_id';
             const kode = 'abc';
-            yield expect(services_1.BarangService.createBarang(nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null));
+            yield expect(barangService.createBarang(nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null));
             expect(mockedGetPerusahaanById).not.toHaveBeenCalled();
             expect(mockedBarangCreate).not.toHaveBeenCalled();
         }));
@@ -433,7 +436,7 @@ describe('Barang Service', () => {
             mockedGetPerusahaanById.mockImplementation(() => {
                 throw new utils_1.HttpError(types_1.HttpStatusCode.NotFound, "Perusahaan not found");
             });
-            yield expect(services_1.BarangService.createBarang(nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Perusahaan not found', null));
+            yield expect(barangService.createBarang(nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Perusahaan not found', null));
             expect(mockedGetPerusahaanById).toHaveBeenCalledTimes(1);
             expect(mockedGetPerusahaanById).toHaveBeenCalledWith(perusahaan_id);
             expect(mockedBarangCreate).not.toHaveBeenCalled();
@@ -466,7 +469,7 @@ describe('Barang Service', () => {
             };
             mockedGetPerusahaanById.mockResolvedValue(mockPerusahaan);
             mockedBarangUpdate.mockResolvedValue(mockUpdatedBarang);
-            const result = yield services_1.BarangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode);
+            const result = yield barangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode);
             expect(mockedGetPerusahaanById).toHaveBeenCalledTimes(1);
             expect(mockedGetPerusahaanById).toHaveBeenCalledWith(perusahaan_id);
             expect(mockedBarangUpdate).toHaveBeenCalledTimes(1);
@@ -499,7 +502,7 @@ describe('Barang Service', () => {
             const stok = 20;
             const perusahaan_id = 'perusahaan_id';
             const kode = 'AS3';
-            yield expect(services_1.BarangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null));
+            yield expect(barangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null));
             expect(mockedGetPerusahaanById).not.toHaveBeenCalled();
             expect(mockedBarangUpdate).not.toHaveBeenCalled();
         }));
@@ -513,7 +516,7 @@ describe('Barang Service', () => {
             mockedGetPerusahaanById.mockImplementation(() => {
                 throw new utils_1.HttpError(types_1.HttpStatusCode.NotFound, "Perusahaan not found");
             });
-            yield expect(services_1.BarangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Perusahaan not found', null));
+            yield expect(barangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Perusahaan not found', null));
             expect(mockedGetPerusahaanById).toHaveBeenCalledTimes(1);
             expect(mockedGetPerusahaanById).toHaveBeenCalledWith(perusahaan_id);
             expect(mockedBarangUpdate).not.toHaveBeenCalled();
@@ -536,7 +539,7 @@ describe('Barang Service', () => {
             mockedBarangUpdate.mockImplementation(() => {
                 throw new library_1.PrismaClientKnownRequestError('Barang not found', { clientVersion: 'v1.0', code: '400' });
             });
-            yield expect(services_1.BarangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Barang not found', null));
+            yield expect(barangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Barang not found', null));
             expect(mockedBarangUpdate).toHaveBeenCalledTimes(1);
             expect(mockedBarangUpdate).toHaveBeenCalledWith({
                 where: {
@@ -574,7 +577,7 @@ describe('Barang Service', () => {
                 updated_at: new Date()
             };
             mockedBarangDelete.mockResolvedValue(mockDeletedBarang);
-            const result = yield services_1.BarangService.deleteBarang(id);
+            const result = yield barangService.deleteBarang(id);
             expect(mockedBarangDelete).toHaveBeenCalledTimes(1);
             expect(mockedBarangDelete).toHaveBeenCalledWith({
                 where: {
@@ -596,7 +599,7 @@ describe('Barang Service', () => {
             mockedBarangDelete.mockImplementation(() => {
                 throw new library_1.PrismaClientKnownRequestError('Barang not found', { clientVersion: 'v1.0', code: '400' });
             });
-            yield expect(services_1.BarangService.deleteBarang(id)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Barang not found', null));
+            yield expect(barangService.deleteBarang(id)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Barang not found', null));
             expect(mockedBarangDelete).toHaveBeenCalledTimes(1);
             expect(mockedBarangDelete).toHaveBeenCalledWith({
                 where: {

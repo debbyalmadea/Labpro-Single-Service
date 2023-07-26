@@ -20,6 +20,7 @@ const mockedPerusahaanFindFirst = models_1.Perusahaan.findFirst;
 const mockedPerusahaanCreate = models_1.Perusahaan.create;
 const mockedPerusahaanUpdate = models_1.Perusahaan.update;
 const mockedPerusahaanDelete = models_1.Perusahaan.delete;
+let perusahaanService = new services_1.PerusahaanService(models_1.Perusahaan);
 const mockPerusahaanList = [
     {
         "id": "clk75yk1k0004wh1in65b2rgz",
@@ -69,12 +70,13 @@ const mockPerusahaanList = [
 ];
 describe('Perusahaan Service', () => {
     afterEach(() => {
+        perusahaanService = new services_1.PerusahaanService(models_1.Perusahaan);
         jest.clearAllMocks();
     });
     describe('getAllPerusahaan', () => {
         it('should return all perusahaan with selected attributes ordered by name in ascending order', () => __awaiter(void 0, void 0, void 0, function* () {
             mockedPerusahaanFindMany.mockResolvedValue(mockPerusahaanList);
-            const result = yield services_1.PerusahaanService.getAllPerusahaan();
+            const result = yield perusahaanService.getAllPerusahaan();
             expect(mockedPerusahaanFindMany).toHaveBeenCalledWith({
                 select: {
                     id: true,
@@ -95,7 +97,7 @@ describe('Perusahaan Service', () => {
     describe('filterPerusahaan', () => {
         it('should return all perusahaan with selected attributes ordered by name in ascending order when provided with undefined query', () => __awaiter(void 0, void 0, void 0, function* () {
             mockedPerusahaanFindMany.mockResolvedValue(mockPerusahaanList);
-            const result = yield services_1.PerusahaanService.filterPerusahaan();
+            const result = yield perusahaanService.filterPerusahaan();
             expect(mockedPerusahaanFindMany).toHaveBeenCalledWith({
                 where: {
                     OR: [
@@ -142,7 +144,7 @@ describe('Perusahaan Service', () => {
                 },
             ];
             mockedPerusahaanFindMany.mockResolvedValue(_mockPerusahaanList);
-            const result = yield services_1.PerusahaanService.filterPerusahaan(query);
+            const result = yield perusahaanService.filterPerusahaan(query);
             expect(mockedPerusahaanFindMany).toHaveBeenCalledWith({
                 where: {
                     OR: [
@@ -189,7 +191,7 @@ describe('Perusahaan Service', () => {
                 },
             ];
             mockedPerusahaanFindMany.mockResolvedValue(_mockPerusahaanList);
-            const result = yield services_1.PerusahaanService.filterPerusahaan(query);
+            const result = yield perusahaanService.filterPerusahaan(query);
             expect(mockedPerusahaanFindMany).toHaveBeenCalledWith({
                 where: {
                     OR: [
@@ -236,7 +238,7 @@ describe('Perusahaan Service', () => {
                 updated_at: new Date(),
             };
             mockedPerusahaanFindFirst.mockResolvedValue(mockPerusahaan);
-            const result = yield services_1.PerusahaanService.getPerusahaanById(id);
+            const result = yield perusahaanService.getPerusahaanById(id);
             expect(mockedPerusahaanFindFirst).toHaveBeenCalledWith({
                 where: {
                     id: id
@@ -254,7 +256,7 @@ describe('Perusahaan Service', () => {
         it('should throw an error when ID does not exist', () => __awaiter(void 0, void 0, void 0, function* () {
             const id = 'unknownid';
             mockedPerusahaanFindFirst.mockResolvedValue(null);
-            yield expect(services_1.PerusahaanService.getPerusahaanById(id)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Perusahaan not found'));
+            yield expect(perusahaanService.getPerusahaanById(id)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Perusahaan not found'));
             expect(mockedPerusahaanFindFirst).toHaveBeenCalledWith({
                 where: {
                     id: id
@@ -285,7 +287,7 @@ describe('Perusahaan Service', () => {
                 updated_at: new Date(),
             };
             mockedPerusahaanCreate.mockResolvedValue(mockCreatedPerusahaan);
-            const result = yield services_1.PerusahaanService.createPerusahaan(nama, alamat, no_telp, kode);
+            const result = yield perusahaanService.createPerusahaan(nama, alamat, no_telp, kode);
             expect(mockedPerusahaanCreate).toHaveBeenCalledTimes(1);
             expect(mockedPerusahaanCreate).toHaveBeenCalledWith({
                 data: {
@@ -309,7 +311,7 @@ describe('Perusahaan Service', () => {
             const alamat = 'Address 1';
             const no_telp = '123456789';
             const kode = 'abc';
-            yield expect(services_1.PerusahaanService.createPerusahaan(nama, alamat, no_telp, kode)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null));
+            yield expect(perusahaanService.createPerusahaan(nama, alamat, no_telp, kode)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null));
             expect(mockedPerusahaanCreate).not.toHaveBeenCalled();
         }));
     });
@@ -330,7 +332,7 @@ describe('Perusahaan Service', () => {
                 updated_at: new Date(),
             };
             mockedPerusahaanUpdate.mockResolvedValue(mockUpdatedPerusahaan);
-            const result = yield services_1.PerusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode);
+            const result = yield perusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode);
             expect(mockedPerusahaanUpdate).toHaveBeenCalledTimes(1);
             expect(mockedPerusahaanUpdate).toHaveBeenCalledWith({
                 where: {
@@ -358,7 +360,7 @@ describe('Perusahaan Service', () => {
             const alamat = 'Address 2';
             const no_telp = '123456789';
             const kode = 'AS3';
-            yield expect(services_1.PerusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null));
+            yield expect(perusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null));
             expect(mockedPerusahaanUpdate).not.toHaveBeenCalled();
         }));
         it('should throw an error when ID does not exist', () => __awaiter(void 0, void 0, void 0, function* () {
@@ -370,7 +372,7 @@ describe('Perusahaan Service', () => {
             mockedPerusahaanUpdate.mockImplementation(() => {
                 throw new library_1.PrismaClientKnownRequestError('Perusahaan not found', { clientVersion: 'v1.0', code: '400' });
             });
-            yield expect(services_1.PerusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Perusahaan not found', null));
+            yield expect(perusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Perusahaan not found', null));
             expect(mockedPerusahaanUpdate).toHaveBeenCalledTimes(1);
             expect(mockedPerusahaanUpdate).toHaveBeenCalledWith({
                 where: {
@@ -405,7 +407,7 @@ describe('Perusahaan Service', () => {
                 updated_at: new Date(),
             };
             mockedPerusahaanDelete.mockResolvedValue(mockDeletedPerusahaan);
-            const result = yield services_1.PerusahaanService.deletePerusahaan(id);
+            const result = yield perusahaanService.deletePerusahaan(id);
             expect(mockedPerusahaanDelete).toHaveBeenCalledTimes(1);
             expect(mockedPerusahaanDelete).toHaveBeenCalledWith({
                 where: {
@@ -426,7 +428,7 @@ describe('Perusahaan Service', () => {
             mockedPerusahaanDelete.mockImplementation(() => {
                 throw new library_1.PrismaClientKnownRequestError('Perusahaan not found', { clientVersion: 'v1.0', code: '400' });
             });
-            yield expect(services_1.PerusahaanService.deletePerusahaan(id)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Perusahaan not found', null));
+            yield expect(perusahaanService.deletePerusahaan(id)).rejects.toThrow(new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Perusahaan not found', null));
             expect(mockedPerusahaanDelete).toHaveBeenCalledTimes(1);
             expect(mockedPerusahaanDelete).toHaveBeenCalledWith({
                 where: {

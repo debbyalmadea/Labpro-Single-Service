@@ -9,13 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const services_1 = require("../services");
 const utils_1 = require("../utils");
 class BarangController {
+    constructor(barangService) {
+        this.barangService = barangService;
+    }
     getAllBarang(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { q, perusahaan } = req.query;
-            const barangList = yield services_1.BarangService.filterBarang(typeof q === 'string' ? q : "", typeof perusahaan === 'string' ? perusahaan : "");
+            const barangList = yield this.barangService.filterBarang(typeof q === 'string' ? q : "", typeof perusahaan === 'string' ? perusahaan : "");
             return (new utils_1.JsonResponse(res))
                 .success()
                 .withData(barangList)
@@ -25,7 +27,7 @@ class BarangController {
     getBarangById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const barang = yield services_1.BarangService.getBarangById(id);
+            const barang = yield this.barangService.getBarangById(id);
             const jsonResponse = new utils_1.JsonResponse(res);
             return jsonResponse
                 .success()
@@ -36,7 +38,7 @@ class BarangController {
     createBarang(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { nama, harga, stok, perusahaan_id, kode } = req.body;
-            const barang = yield services_1.BarangService.createBarang(nama, harga, stok, perusahaan_id, kode);
+            const barang = yield this.barangService.createBarang(nama, harga, stok, perusahaan_id, kode);
             return (new utils_1.JsonResponse(res))
                 .success()
                 .withData(barang)
@@ -47,7 +49,7 @@ class BarangController {
         return __awaiter(this, void 0, void 0, function* () {
             const { nama, harga, stok, perusahaan_id, kode } = req.body;
             const { id } = req.params;
-            const barang = yield services_1.BarangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode);
+            const barang = yield this.barangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode);
             return (new utils_1.JsonResponse(res))
                 .success()
                 .withData(barang)
@@ -57,7 +59,7 @@ class BarangController {
     deleteBarang(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const barang = yield services_1.BarangService.deleteBarang(id);
+            const barang = yield this.barangService.deleteBarang(id);
             return (new utils_1.JsonResponse(res))
                 .success()
                 .withData(barang)
@@ -68,7 +70,7 @@ class BarangController {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
             const { decrease_by } = req.body;
-            const barang = yield services_1.BarangService.decreaseStokBarang(id, decrease_by);
+            const barang = yield this.barangService.decreaseStokBarang(id, decrease_by);
             return (new utils_1.JsonResponse(res))
                 .success()
                 .withData(barang)
@@ -76,4 +78,4 @@ class BarangController {
         });
     }
 }
-exports.default = new BarangController();
+exports.default = BarangController;

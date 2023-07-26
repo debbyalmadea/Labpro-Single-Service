@@ -11,12 +11,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const library_1 = require("@prisma/client/runtime/library");
 const types_1 = require("../common/types");
-const models_1 = require("../models");
 const utils_1 = require("../utils");
 class PerusahaanService {
+    constructor(perusahaanModel) {
+        this.perusahaanModel = perusahaanModel;
+    }
     getAllPerusahaan() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield models_1.Perusahaan.findMany({
+            return yield this.perusahaanModel.findMany({
                 select: {
                     id: true,
                     nama: true,
@@ -34,7 +36,7 @@ class PerusahaanService {
     }
     filterPerusahaan(q) {
         return __awaiter(this, void 0, void 0, function* () {
-            const perusahaanList = yield models_1.Perusahaan.findMany({
+            const perusahaanList = yield this.perusahaanModel.findMany({
                 where: {
                     OR: [
                         {
@@ -69,7 +71,7 @@ class PerusahaanService {
     }
     getPerusahaanById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const perusahaan = yield models_1.Perusahaan.findFirst({
+            const perusahaan = yield this.perusahaanModel.findFirst({
                 where: {
                     id: id
                 },
@@ -93,7 +95,7 @@ class PerusahaanService {
             if (!kodeRegex.test(kode)) {
                 throw new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null);
             }
-            const createdPerusahaan = yield models_1.Perusahaan.create({
+            const createdPerusahaan = yield this.perusahaanModel.create({
                 data: {
                     nama: nama,
                     alamat: alamat,
@@ -118,7 +120,7 @@ class PerusahaanService {
                 throw new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null);
             }
             try {
-                const updatedPerusahaan = yield models_1.Perusahaan.update({
+                const updatedPerusahaan = yield this.perusahaanModel.update({
                     where: {
                         id: id
                     },
@@ -142,13 +144,14 @@ class PerusahaanService {
                 if (error instanceof library_1.PrismaClientKnownRequestError) {
                     throw new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Perusahaan not found');
                 }
+                throw new utils_1.HttpError(types_1.HttpStatusCode.InternalServerError, 'Something is wrong while processing your request');
             }
         });
     }
     deletePerusahaan(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const deletedPerusahaan = yield models_1.Perusahaan.delete({
+                const deletedPerusahaan = yield this.perusahaanModel.delete({
                     where: {
                         id: id,
                     },
@@ -166,8 +169,9 @@ class PerusahaanService {
                 if (error instanceof library_1.PrismaClientKnownRequestError) {
                     throw new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Perusahaan not found');
                 }
+                throw new utils_1.HttpError(types_1.HttpStatusCode.InternalServerError, 'Something is wrong while processing your request');
             }
         });
     }
 }
-exports.default = new PerusahaanService();
+exports.default = PerusahaanService;

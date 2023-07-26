@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "docker-compose up",
+    "start": "node ./dist/src/server.js",
     "start:prod": "node ./dist/src/server.js",
     "build": "echo \"Building project\" && npx prisma generate && npx tsc",
     "dev": "ts-node-dev --respawn ./src/server.ts",

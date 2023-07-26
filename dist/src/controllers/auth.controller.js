@@ -9,13 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const services_1 = require("../services");
 const utils_1 = require("../utils");
 class AuthController {
+    constructor(authService) {
+        this.authService = authService;
+    }
     logIn(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { username, password } = req.body;
-            const data = yield services_1.AuthService.logIn(username, password);
+            const data = yield this.authService.logIn(username, password);
             return (new utils_1.JsonResponse(res))
                 .success()
                 .withData(data)
@@ -24,4 +26,4 @@ class AuthController {
         });
     }
 }
-exports.default = new AuthController();
+exports.default = AuthController;

@@ -9,8 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const zod_1 = require("zod");
-const types_1 = require("../common/types");
+const _1 = require(".");
 const validate = (schema) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield schema.parseAsync({
@@ -21,18 +20,7 @@ const validate = (schema) => (req, res, next) => __awaiter(void 0, void 0, void 
         return next();
     }
     catch (error) {
-        if (error instanceof zod_1.ZodError) {
-            return res.status(types_1.HttpStatusCode.BadRequest).json({
-                status: 'error',
-                message: error.issues[0].message,
-                data: null,
-            });
-        }
-        return res.status(types_1.HttpStatusCode.InternalServerError).json({
-            status: 'error',
-            message: 'Something went wrong while processing your request',
-            data: null,
-        });
+        _1.errorHandlerChain.handle(res, error);
     }
 });
 exports.default = validate;

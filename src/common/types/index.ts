@@ -1,3 +1,7 @@
+import { Prisma } from "@prisma/client";
+import { DefaultArgs } from "@prisma/client/runtime/library";
+import { Request, Response } from "express"
+
 export enum HttpStatusCode {
     Continue = 100,
     SwitchingProtocols = 101,
@@ -63,3 +67,102 @@ export enum HttpStatusCode {
     NotExtended = 510,
     NetworkAuthenticationRequired = 511,
   }
+
+export type Handler = (req: Request, res: Response) => Promise<Response>
+
+export interface IAuthController {
+  logIn: Handler
+}
+
+export interface IBarangController {
+  getAllBarang: Handler;
+  getBarangById: Handler;
+  createBarang: Handler;
+  updateBarang: Handler;
+  deleteBarang: Handler;
+  decreaseStokBarang: Handler;
+}
+
+export interface IPerusahaanController {
+  getAllPerusahaan: Handler;
+  getPerusahaanById: Handler;
+  createPerusahaan: Handler;
+  updatePerusahaan: Handler;
+  deletePerusahaan: Handler;
+}
+
+export interface IUserController {
+  getSelfDetail: Handler;
+}
+
+export interface IJsonResponseBuilder {
+  setStatusCode: (code: HttpStatusCode) => IJsonResponseBuilder;
+  withMessage: (message: string) => IJsonResponseBuilder;
+  withData: (data: Object | undefined | null) => IJsonResponseBuilder;
+  make: () => Response
+}
+
+export interface IJsonResponse {
+  success: (statusCode?: HttpStatusCode) => IJsonResponseBuilder;
+  error: (statusCode?: HttpStatusCode) => IJsonResponseBuilder;
+}
+
+export interface IAuthService {
+  logIn: (username: string, password: string) => Promise<{
+    user: {
+        username: string;
+        name: string;
+    };
+    token: string;
+  }>
+}
+
+export interface IUserService {
+  getUserByUsername: (username: string) => Promise<{
+    username: string;
+    name: string;
+    password: string;
+    created_at: Date;
+    updated_at: Date;
+  }>
+}
+
+interface Barang {
+    id: string;
+    nama: string;
+    harga: number;
+    stok: number;
+    perusahaan_id: string;
+    kode: string;
+}
+
+export interface IBarangService {
+  getAllBarang: () => Promise<Barang[]>
+  filterBarang: (q?: string, perusahaan_id?: string) => Promise<Barang[]>
+  getBarangById: (id: string) => Promise<Barang>;
+  createBarang: (nama: string, harga: number, stok: number, perusahaan_id: string, kode: string) => Promise<Barang>;
+  updateBarang: (id: string, nama: string, harga: number, stok: number, perusahaan_id: string, kode: string) => Promise<Barang>;
+  deleteBarang: (id: string) => Promise<Barang>;
+  decreaseStokBarang: (id: string, stok: number) => Promise<Barang>;
+}
+
+interface Perusahaan {
+  id: string;
+  nama: string;
+  alamat: string;
+  no_telp: string;
+  kode: string;
+}
+
+export interface IPerusahaanService {
+  getAllPerusahaan: () => Promise<Perusahaan[]>
+  filterPerusahaan: (q?: string) => Promise<Perusahaan[]>
+  getPerusahaanById: (id: string) => Promise<Perusahaan>;
+  createPerusahaan: (nama: string, alamat: string, no_telp: string, kode: string) => Promise<Perusahaan>;
+  updatePerusahaan: (id: string, nama: string, alamat: string, no_telp: string, kode: string) => Promise<Perusahaan>;
+  deletePerusahaan: (id: string) => Promise<Perusahaan>;
+}
+
+export type UserModel =  Prisma.UserDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined, DefaultArgs>;
+export type BarangModel = Prisma.BarangDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined, DefaultArgs>;
+export type PerusahaanModel = Prisma.PerusahaanDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined, DefaultArgs>

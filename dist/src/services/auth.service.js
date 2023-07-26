@@ -16,15 +16,14 @@ const bcryptjs_1 = require("bcryptjs");
 const utils_1 = require("../utils");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const configs_1 = require("../configs");
-const _1 = require(".");
 const types_1 = require("../common/types");
 class AuthService {
+    constructor(userService) {
+        this.userService = userService;
+    }
     logIn(username, password) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield _1.UserService.getUserByUsername(username);
-            if (!user) {
-                throw new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'User not found');
-            }
+            const user = yield this.userService.getUserByUsername(username);
             const validPassword = yield (0, bcryptjs_1.compare)(password, user.password);
             if (!validPassword) {
                 throw new utils_1.HttpError(types_1.HttpStatusCode.Unauthorized, 'Invalid password');
@@ -43,4 +42,4 @@ class AuthService {
         });
     }
 }
-exports.default = new AuthService();
+exports.default = AuthService;

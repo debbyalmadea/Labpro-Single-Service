@@ -41,6 +41,7 @@ class JsonResponse {
     }
     success(statusCode) {
         this.reset();
+        this.statusCode = statusCode !== null && statusCode !== void 0 ? statusCode : types_1.HttpStatusCode.Ok;
         this.status = 'success';
         this.message = 'Success';
         return new JsonResponseBuilder(this);

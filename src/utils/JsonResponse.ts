@@ -1,7 +1,7 @@
 import { Response } from "express";
-import { HttpStatusCode } from "../common/types";
+import { HttpStatusCode, IJsonResponse, IJsonResponseBuilder } from "../common/types";
 
-class JsonResponseBuilder {
+class JsonResponseBuilder implements IJsonResponseBuilder {
     constructor(private jsonResponse: JsonResponse) {}
 
     setStatusCode(code: HttpStatusCode) {
@@ -28,7 +28,7 @@ class JsonResponseBuilder {
     }
 }
 
-class JsonResponse {
+class JsonResponse implements IJsonResponse {
     public status: 'success' | 'error' = 'success';
     public statusCode: HttpStatusCode = HttpStatusCode.Ok;
     public message: string = '';
@@ -45,6 +45,7 @@ class JsonResponse {
 
     success(statusCode?: HttpStatusCode) {
         this.reset();
+        this.statusCode = statusCode ?? HttpStatusCode.Ok
         this.status = 'success';
         this.message = 'Success';
         return new JsonResponseBuilder(this);

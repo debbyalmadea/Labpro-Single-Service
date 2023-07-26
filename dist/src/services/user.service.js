@@ -9,20 +9,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const models_1 = require("../models");
+const types_1 = require("../common/types");
+const utils_1 = require("../utils");
 class UserService {
+    constructor(userModel) {
+        this.userModel = userModel;
+    }
     getUserByUsername(username) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield models_1.User.findFirst({
+            const user = yield this.userModel.findFirst({
                 where: {
                     username: username
                 }
             });
             if (!user) {
-                return null;
+                throw new utils_1.HttpError(types_1.HttpStatusCode.NotFound, "User not found");
             }
             return user;
         });
     }
 }
-exports.default = new UserService();
+exports.default = UserService;

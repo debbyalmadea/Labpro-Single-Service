@@ -1,11 +1,17 @@
 import { Request, Response } from "express";
-import { AuthService } from "../services";
 import { JsonResponse } from "../utils";
+import { IAuthController, IAuthService } from "../common/types";
 
-class AuthController {
+class AuthController implements IAuthController {
+    private authService: IAuthService;
+
+    constructor(authService: IAuthService) {
+        this.authService = authService;
+    }
+
     async logIn(req: Request, res: Response) {
         const { username, password } = req.body;
-        const data = await AuthService.logIn(username, password);
+        const data = await this.authService.logIn(username, password);
 
         return (new JsonResponse(res))
                 .success()
@@ -15,4 +21,4 @@ class AuthController {
     }
 }
 
-export default new AuthController();
+export default AuthController;

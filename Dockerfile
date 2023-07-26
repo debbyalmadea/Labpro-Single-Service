@@ -7,6 +7,12 @@ COPY package*.json ./
 RUN rm -rf node_modules
 RUN npm install
 COPY . .
+
+RUN npx prisma generate
+RUN npx prisma migrate dev --name init
+
+RUN npm run build
+
 EXPOSE 1234
 
-CMD ["./start.sh" ]
+CMD ["npm", "run", "start"]

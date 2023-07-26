@@ -1,13 +1,18 @@
 import { Request, Response } from "express";
-import { PerusahaanService } from "../services";
-import { HttpStatusCode } from "../common/types";
 import { JsonResponse } from "../utils";
+import { IPerusahaanController, IPerusahaanService } from "../common/types";
 
-class PerusahaanController {
+class PerusahaanController implements IPerusahaanController {
+    private perusahaanService: IPerusahaanService;
+
+    constructor(perusahaanService: IPerusahaanService) {
+        this.perusahaanService = perusahaanService;
+    }
+
     async getAllPerusahaan(req: Request, res: Response) {
         const { q } = req.query;
 
-        const perusahaanList = await PerusahaanService.filterPerusahaan(typeof q === 'string' ? q : "");
+        const perusahaanList = await this.perusahaanService.filterPerusahaan(typeof q === 'string' ? q : "");
 
         return (new JsonResponse(res))
                 .success()
@@ -18,7 +23,7 @@ class PerusahaanController {
     async getPerusahaanById(req: Request, res: Response) {
         const { id } = req.params;
 
-        const perusahaan = await PerusahaanService.getPerusahaanById(id);
+        const perusahaan = await this.perusahaanService.getPerusahaanById(id);
 
         const jsonResponse = new JsonResponse(res);
 
@@ -30,7 +35,7 @@ class PerusahaanController {
 
     async createPerusahaan(req: Request, res: Response) {
         const { nama, alamat, no_telp, kode } = req.body;
-        const perusahaan = await PerusahaanService.createPerusahaan(nama, alamat, no_telp, kode);
+        const perusahaan = await this.perusahaanService.createPerusahaan(nama, alamat, no_telp, kode);
 
         return (new JsonResponse(res))
                 .success()
@@ -41,7 +46,7 @@ class PerusahaanController {
     async updatePerusahaan(req: Request, res: Response) {
         const { nama, alamat, no_telp, kode } = req.body;
         const { id } = req.params
-        const perusahaan = await PerusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode);
+        const perusahaan = await this.perusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode);
 
         return (new JsonResponse(res))
                 .success()
@@ -52,7 +57,7 @@ class PerusahaanController {
     async deletePerusahaan(req: Request, res: Response) {
         const { id } = req.params
 
-        const perusahaan = await PerusahaanService.deletePerusahaan(id);
+        const perusahaan = await this.perusahaanService.deletePerusahaan(id);
 
         return (new JsonResponse(res))
                 .success()
@@ -61,4 +66,4 @@ class PerusahaanController {
     }
 }
 
-export default new PerusahaanController();
+export default PerusahaanController;

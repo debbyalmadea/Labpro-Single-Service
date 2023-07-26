@@ -1,19 +1,26 @@
-import { User } from "../models";
+import { HttpStatusCode, UserModel, IUserService } from "../common/types";
+import { HttpError } from "../utils";
 
-class UserService {
+class UserService implements IUserService {
+    private userModel: UserModel;
+
+    constructor(userModel: UserModel) {
+        this.userModel = userModel;
+    }
+
     async getUserByUsername(username: string) {
-        const user = await User.findFirst({
+        const user = await this.userModel.findFirst({
             where: {
                 username: username
             }
         })
 
         if (!user) {
-            return null;
+            throw new HttpError(HttpStatusCode.NotFound, "User not found")
         }
 
         return user
     }
 }
 
-export default new UserService();
+export default UserService;

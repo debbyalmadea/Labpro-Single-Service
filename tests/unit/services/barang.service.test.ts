@@ -1,10 +1,11 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { HttpStatusCode } from "../../../src/common/types";
-import { Barang } from "../../../src/models";
+import { Barang, Perusahaan } from "../../../src/models";
 import { BarangService, PerusahaanService } from "../../../src/services";
 import { HttpError } from "../../../src/utils";
 
-const mockedGetPerusahaanById = jest.spyOn(PerusahaanService, 'getPerusahaanById');
+const perusahaanService = new PerusahaanService(Perusahaan);
+const mockedGetPerusahaanById = jest.spyOn(perusahaanService, 'getPerusahaanById');
 
 jest.mock("../../../src/models");
 const mockedBarangFindMany = Barang.findMany as jest.MockedFunction<typeof Barang.findMany>;
@@ -12,6 +13,8 @@ const mockedBarangFindFirst = Barang.findFirst as jest.MockedFunction<typeof Bar
 const mockedBarangCreate = Barang.create as jest.MockedFunction<typeof Barang.create>;
 const mockedBarangUpdate = Barang.update as jest.MockedFunction<typeof Barang.update>;
 const mockedBarangDelete = Barang.delete as jest.MockedFunction<typeof Barang.delete>;
+
+let barangService = new BarangService(Barang, perusahaanService);
 
 const mockBarangList = [
     {
@@ -78,6 +81,7 @@ const mockBarangList = [
 
 describe('Barang Service', () => {
   afterEach(() => {
+    barangService = new BarangService(Barang, perusahaanService);
     jest.clearAllMocks(); 
   });
 
@@ -85,7 +89,7 @@ describe('Barang Service', () => {
     it('should return all barang with selected attributes ordered by name in ascending order', async () => {
         mockedBarangFindMany.mockResolvedValue(mockBarangList);
         
-        const result = await BarangService.getAllBarang();
+        const result = await barangService.getAllBarang();
     
         expect(mockedBarangFindMany).toHaveBeenCalledWith({
             select: {
@@ -111,7 +115,7 @@ describe('Barang Service', () => {
     it('should return all barang with selected attributes ordered by name in ascending order when provided with undefined query and company', async () => {
         mockedBarangFindMany.mockResolvedValue(mockBarangList);
         
-        const result = await BarangService.filterBarang();
+        const result = await barangService.filterBarang();
     
         expect(mockedBarangFindMany).toHaveBeenCalledWith({
             where: {
@@ -177,7 +181,7 @@ describe('Barang Service', () => {
         ];
         mockedBarangFindMany.mockResolvedValue(_mockBarangList);
         
-        const result = await BarangService.filterBarang(query);
+        const result = await barangService.filterBarang(query);
     
         expect(mockedBarangFindMany).toHaveBeenCalledWith({
             where: {
@@ -233,7 +237,7 @@ describe('Barang Service', () => {
         ];
         mockedBarangFindMany.mockResolvedValue(_mockBarangList);
         
-        const result = await BarangService.filterBarang(query);
+        const result = await barangService.filterBarang(query);
     
         expect(mockedBarangFindMany).toHaveBeenCalledWith({
             where: {
@@ -289,7 +293,7 @@ describe('Barang Service', () => {
         ];
         mockedBarangFindMany.mockResolvedValue(_mockBarangList);
         
-        const result = await BarangService.filterBarang(undefined, 'clk77y1zt0001of62mbhuhohv');
+        const result = await barangService.filterBarang(undefined, 'clk77y1zt0001of62mbhuhohv');
     
         expect(mockedBarangFindMany).toHaveBeenCalledWith({
             where: {
@@ -346,7 +350,7 @@ describe('Barang Service', () => {
 
         mockedBarangFindFirst.mockResolvedValue(mockBarang);
 
-        const result = await BarangService.getBarangById(id);
+        const result = await barangService.getBarangById(id);
 
         expect(mockedBarangFindFirst).toHaveBeenCalledWith({
             where: {
@@ -370,7 +374,7 @@ describe('Barang Service', () => {
 
         mockedBarangFindFirst.mockResolvedValue(null);
 
-        await expect(BarangService.getBarangById(id)).rejects.toThrow(
+        await expect(barangService.getBarangById(id)).rejects.toThrow(
             new HttpError(HttpStatusCode.NotFound, 'Barang not found')
           );
       
@@ -420,7 +424,7 @@ describe('Barang Service', () => {
         mockedGetPerusahaanById.mockResolvedValue(mockPerusahaan);
         mockedBarangCreate.mockResolvedValue(mockCreatedBarang);
     
-        const result = await BarangService.createBarang(nama, harga, stok, perusahaan_id, kode);
+        const result = await barangService.createBarang(nama, harga, stok, perusahaan_id, kode);
     
         expect(mockedGetPerusahaanById).toHaveBeenCalledTimes(1);
         expect(mockedGetPerusahaanById).toHaveBeenCalledWith(perusahaan_id);
@@ -454,7 +458,7 @@ describe('Barang Service', () => {
         const perusahaan_id = 'perusahaan_id';
         const kode = 'abc'; 
     
-        await expect(BarangService.createBarang(nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(
+        await expect(barangService.createBarang(nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(
           new HttpError(HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null)
         );
     
@@ -474,7 +478,7 @@ describe('Barang Service', () => {
             throw new HttpError(HttpStatusCode.NotFound, "Perusahaan not found")
         });
     
-        await expect(BarangService.createBarang(nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(
+        await expect(barangService.createBarang(nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(
           new HttpError(HttpStatusCode.NotFound, 'Perusahaan not found', null)
         );
     
@@ -517,7 +521,7 @@ describe('Barang Service', () => {
     
         mockedBarangUpdate.mockResolvedValue(mockUpdatedBarang);
     
-        const result = await BarangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode);
+        const result = await barangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode);
     
         expect(mockedGetPerusahaanById).toHaveBeenCalledTimes(1);
         expect(mockedGetPerusahaanById).toHaveBeenCalledWith(perusahaan_id);
@@ -555,7 +559,7 @@ describe('Barang Service', () => {
         const perusahaan_id = 'perusahaan_id';
         const kode = 'AS3'; 
     
-        await expect(BarangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(
+        await expect(barangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(
           new HttpError(HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null)
         );
     
@@ -576,7 +580,7 @@ describe('Barang Service', () => {
             throw new HttpError(HttpStatusCode.NotFound, "Perusahaan not found")
         });
     
-        await expect(BarangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(
+        await expect(barangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(
           new HttpError(HttpStatusCode.NotFound, 'Perusahaan not found', null)
         );
     
@@ -608,7 +612,7 @@ describe('Barang Service', () => {
             throw new PrismaClientKnownRequestError('Barang not found', {clientVersion: 'v1.0', code: '400'});
         })
     
-        await expect(BarangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(
+        await expect(barangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(
           new HttpError(HttpStatusCode.NotFound, 'Barang not found', null)
         );
     
@@ -653,7 +657,7 @@ describe('Barang Service', () => {
     
         mockedBarangDelete.mockResolvedValue(mockDeletedBarang);
     
-        const result = await BarangService.deleteBarang(id);
+        const result = await barangService.deleteBarang(id);
     
         expect(mockedBarangDelete).toHaveBeenCalledTimes(1);
         expect(mockedBarangDelete).toHaveBeenCalledWith({
@@ -680,7 +684,7 @@ describe('Barang Service', () => {
             throw new PrismaClientKnownRequestError('Barang not found', {clientVersion: 'v1.0', code: '400'});
         })
     
-        await expect(BarangService.deleteBarang(id)).rejects.toThrow(
+        await expect(barangService.deleteBarang(id)).rejects.toThrow(
           new HttpError(HttpStatusCode.NotFound, 'Barang not found', null)
         );
     

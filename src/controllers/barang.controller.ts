@@ -1,13 +1,18 @@
 import { Request, Response } from "express";
-import { BarangService } from "../services";
-import { HttpStatusCode } from "../common/types";
 import { JsonResponse } from "../utils";
+import { IBarangController, IBarangService } from "../common/types";
 
-class BarangController {
+class BarangController implements IBarangController {
+    private barangService: IBarangService;
+
+    constructor(barangService: IBarangService) {
+        this.barangService = barangService;
+    }
+
     async getAllBarang(req: Request, res: Response) {
         const { q, perusahaan } = req.query;
 
-        const barangList = await BarangService.filterBarang(
+        const barangList = await this.barangService.filterBarang(
             typeof q === 'string' ? q : "", 
             typeof perusahaan === 'string' ? perusahaan : ""
         );
@@ -21,7 +26,7 @@ class BarangController {
     async getBarangById(req: Request, res: Response) {
         const { id } = req.params;
 
-        const barang = await BarangService.getBarangById(id);
+        const barang = await this.barangService.getBarangById(id);
 
         const jsonResponse = new JsonResponse(res);
 
@@ -33,7 +38,7 @@ class BarangController {
 
     async createBarang(req: Request, res: Response) {
         const { nama, harga, stok, perusahaan_id, kode } = req.body;
-        const barang = await BarangService.createBarang(nama, harga, stok, perusahaan_id, kode);
+        const barang = await this.barangService.createBarang(nama, harga, stok, perusahaan_id, kode);
 
         return (new JsonResponse(res))
                 .success()
@@ -44,7 +49,7 @@ class BarangController {
     async updateBarang(req: Request, res: Response) {
         const { nama, harga, stok, perusahaan_id, kode } = req.body;
         const { id } = req.params
-        const barang = await BarangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode);
+        const barang = await this.barangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode);
 
         return (new JsonResponse(res))
                 .success()
@@ -55,7 +60,7 @@ class BarangController {
     async deleteBarang(req: Request, res: Response) {
         const { id } = req.params
 
-        const barang = await BarangService.deleteBarang(id);
+        const barang = await this.barangService.deleteBarang(id);
         
         return (new JsonResponse(res))
                 .success()
@@ -67,7 +72,7 @@ class BarangController {
         const { id } = req.params;
         const { decrease_by } = req.body;
 
-        const barang = await BarangService.decreaseStokBarang(id, decrease_by);
+        const barang = await this.barangService.decreaseStokBarang(id, decrease_by);
 
         return (new JsonResponse(res))
                 .success()
@@ -76,4 +81,4 @@ class BarangController {
     }
 }
 
-export default new BarangController();
+export default BarangController;

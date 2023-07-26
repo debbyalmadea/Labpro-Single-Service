@@ -1,9 +1,10 @@
 import hasher from "./hasher"
 import prisma from "./prisma"
-import HttpError from "./httpError"
 import tryCatchWrapper from "./tryCatchWrapper"
 import validate from "./validate"
 import JsonResponse from "./JsonResponse"
+import HttpError from "./httpError"
+import errorHandlerChain from './ErrorHandler';
 
 export {
     hasher,
@@ -11,5 +12,6 @@ export {
     HttpError,
     tryCatchWrapper,
     validate,
-    JsonResponse
+    JsonResponse,
+    errorHandlerChain
 }

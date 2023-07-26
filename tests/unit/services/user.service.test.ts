@@ -1,11 +1,15 @@
+import { HttpStatusCode } from "../../../src/common/types";
 import { User } from "../../../src/models";
 import { UserService } from "../../../src/services";
+import { HttpError } from "../../../src/utils";
 
 jest.mock("../../../src/models");
 const mockedUserFindFirst = User.findFirst as jest.MockedFunction<typeof User.findFirst>;
+let userService = new UserService(User);
 
 describe('User Service', () => {
   afterEach(() => {
+    userService = new UserService(User);
     jest.clearAllMocks(); 
   });
 
@@ -22,7 +26,7 @@ describe('User Service', () => {
 
       mockedUserFindFirst.mockResolvedValue(mockUser);
 
-      const result = await UserService.getUserByUsername(username);
+      const result = await userService.getUserByUsername(username);
 
       expect(mockedUserFindFirst).toHaveBeenCalledWith({
         where: {
@@ -33,20 +37,20 @@ describe('User Service', () => {
       expect(result).toEqual(mockUser);
     });
 
-    it('should return null if user not found', async () => {
+    it('should throw an error when username does not exist', async () => {
       const username = 'unknownuser';
 
       mockedUserFindFirst.mockResolvedValue(null);
 
-      const result = await UserService.getUserByUsername(username);
-
+      await expect(userService.getUserByUsername(username)).rejects.toThrow(
+          new HttpError(HttpStatusCode.NotFound, 'User not found')
+        );
+    
       expect(mockedUserFindFirst).toHaveBeenCalledWith({
         where: {
           username: username,
         },
       });
-
-      expect(result).toBeNull();
-    });
+  });
   });
 });
