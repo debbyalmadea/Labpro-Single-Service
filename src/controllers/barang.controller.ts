@@ -1,21 +1,21 @@
 import { Request, Response } from "express";
 import { BarangService } from "../services";
 import { HttpStatusCode } from "../common/types";
+import { JsonResponse } from "../utils";
 
 class BarangController {
     async getAllBarang(req: Request, res: Response) {
         const { q, perusahaan } = req.query;
 
-        const barangList = await BarangService.searchBarang(
+        const barangList = await BarangService.filterBarang(
             typeof q === 'string' ? q : "", 
             typeof perusahaan === 'string' ? perusahaan : ""
         );
 
-        return res.status(HttpStatusCode.Accepted).json({
-            status: 'success',
-            message: "Successfully retrieved data",
-            data: barangList
-        })
+        return (new JsonResponse(res))
+                .success()
+                .withData(barangList)
+                .make();
     }
 
     async getBarangById(req: Request, res: Response) {
@@ -23,30 +23,22 @@ class BarangController {
 
         const barang = await BarangService.getBarangById(id);
 
-        if (!barang) {
-            return res.status(HttpStatusCode.NotFound).json({
-                status: 'error',
-                message: "Barang not found",
-                data: null
-            })
-        }
+        const jsonResponse = new JsonResponse(res);
 
-        return res.status(HttpStatusCode.Accepted).json({
-            status: 'success',
-            message: "Successfully retrieved data",
-            data: barang
-        })
+        return jsonResponse
+                .success()
+                .withData(barang)
+                .make();
     }
 
     async createBarang(req: Request, res: Response) {
         const { nama, harga, stok, perusahaan_id, kode } = req.body;
         const barang = await BarangService.createBarang(nama, harga, stok, perusahaan_id, kode);
 
-        return res.status(HttpStatusCode.Accepted).json({
-            status: 'success',
-            message: "Successfully created Barang",
-            data: barang
-        })
+        return (new JsonResponse(res))
+                .success()
+                .withData(barang)
+                .make();
     }
 
     async updateBarang(req: Request, res: Response) {
@@ -54,36 +46,33 @@ class BarangController {
         const { id } = req.params
         const barang = await BarangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode);
 
-        return res.status(HttpStatusCode.Accepted).json({
-            status: 'success',
-            message: "Successfully updated Barang",
-            data: barang
-        })
+        return (new JsonResponse(res))
+                .success()
+                .withData(barang)
+                .make();
     }
 
     async deleteBarang(req: Request, res: Response) {
         const { id } = req.params
 
         const barang = await BarangService.deleteBarang(id);
-
-        return res.status(HttpStatusCode.Accepted).json({
-            status: 'success',
-            message: "Successfully deleted Barang",
-            data: barang
-        })
+        
+        return (new JsonResponse(res))
+                .success()
+                .withData(barang)
+                .make();
     }
 
-    async updateStokBarang(req: Request, res: Response) {
-        const { id } = req.params
-        const { stok_baru } = req.body
+    async decreaseStokBarang(req: Request, res: Response) {
+        const { id } = req.params;
+        const { decrease_by } = req.body;
 
-        const barang = await BarangService.updateStokBarang(id, stok_baru);
+        const barang = await BarangService.decreaseStokBarang(id, decrease_by);
 
-        return res.status(HttpStatusCode.Accepted).json({
-            status: 'success',
-            message: "Successfully updated stok",
-            data: barang
-        })
+        return (new JsonResponse(res))
+                .success()
+                .withData(barang)
+                .make();
     }
 }
 

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateStokBarangSchema = exports.deleteBarangSchema = exports.updateBarangSchema = exports.createBarangSchema = exports.getBarangByIdSchema = void 0;
+exports.decreaseStokBarangSchema = exports.deleteBarangSchema = exports.updateBarangSchema = exports.createBarangSchema = exports.getBarangByIdSchema = void 0;
 const zod_1 = require("zod");
 const getBarangByIdSchema = zod_1.z.object({
     params: zod_1.z.object({
@@ -63,16 +63,16 @@ const deleteBarangSchema = zod_1.z.object({
     })
 });
 exports.deleteBarangSchema = deleteBarangSchema;
-const updateStokBarangSchema = zod_1.z.object({
+const decreaseStokBarangSchema = zod_1.z.object({
     params: zod_1.z.object({
         id: zod_1.z.string({
             required_error: "Params Id is required",
         }),
     }),
     body: zod_1.z.object({
-        stok: zod_1.z.number({
-            required_error: "Stok is required"
-        }).int({ message: "Stok must be integer" }).min(0, { message: "Stok can't be negative" }),
+        decrease_by: zod_1.z.number({
+            required_error: "Decrease by is required"
+        }).int({ message: "Decrease by must be integer" }).min(0, { message: "Decrease by can't be negative" }),
     })
 });
-exports.updateStokBarangSchema = updateStokBarangSchema;
+exports.decreaseStokBarangSchema = decreaseStokBarangSchema;

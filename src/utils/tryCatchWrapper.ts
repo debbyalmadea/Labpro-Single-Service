@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import HttpError from "./httpError";
 import { HttpStatusCode } from "../common/types";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const tryCatchWrapper = (
     handler: (req: Request, res: Response) => Promise<Response>
@@ -9,12 +10,19 @@ const tryCatchWrapper = (
         try {
           await handler(req, res);
         } catch (error) {
-          console.log('error', error);
           if (error instanceof HttpError) {
             return res.status(error.statusCode).json({
               status: 'error',
               message: error.message,
               data: error.data,
+            });
+          }
+
+          if (error instanceof PrismaClientKnownRequestError) {
+            res.status(HttpStatusCode.BadRequest).json({
+              status: 'error',
+              message: error.message,
+              data: null,
             });
           }
 

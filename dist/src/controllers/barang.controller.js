@@ -10,46 +10,37 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const services_1 = require("../services");
-const types_1 = require("../common/types");
+const utils_1 = require("../utils");
 class BarangController {
     getAllBarang(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { q, perusahaan } = req.query;
-            const barangList = yield services_1.BarangService.searchBarang(typeof q === 'string' ? q : "", typeof perusahaan === 'string' ? perusahaan : "");
-            return res.status(types_1.HttpStatusCode.Accepted).json({
-                status: 'success',
-                message: "Successfully retrieved data",
-                data: barangList
-            });
+            const barangList = yield services_1.BarangService.filterBarang(typeof q === 'string' ? q : "", typeof perusahaan === 'string' ? perusahaan : "");
+            return (new utils_1.JsonResponse(res))
+                .success()
+                .withData(barangList)
+                .make();
         });
     }
     getBarangById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
             const barang = yield services_1.BarangService.getBarangById(id);
-            if (!barang) {
-                return res.status(types_1.HttpStatusCode.NotFound).json({
-                    status: 'error',
-                    message: "Barang not found",
-                    data: null
-                });
-            }
-            return res.status(types_1.HttpStatusCode.Accepted).json({
-                status: 'success',
-                message: "Successfully retrieved data",
-                data: barang
-            });
+            const jsonResponse = new utils_1.JsonResponse(res);
+            return jsonResponse
+                .success()
+                .withData(barang)
+                .make();
         });
     }
     createBarang(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { nama, harga, stok, perusahaan_id, kode } = req.body;
             const barang = yield services_1.BarangService.createBarang(nama, harga, stok, perusahaan_id, kode);
-            return res.status(types_1.HttpStatusCode.Accepted).json({
-                status: 'success',
-                message: "Successfully created Barang",
-                data: barang
-            });
+            return (new utils_1.JsonResponse(res))
+                .success()
+                .withData(barang)
+                .make();
         });
     }
     updateBarang(req, res) {
@@ -57,34 +48,31 @@ class BarangController {
             const { nama, harga, stok, perusahaan_id, kode } = req.body;
             const { id } = req.params;
             const barang = yield services_1.BarangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode);
-            return res.status(types_1.HttpStatusCode.Accepted).json({
-                status: 'success',
-                message: "Successfully updated Barang",
-                data: barang
-            });
+            return (new utils_1.JsonResponse(res))
+                .success()
+                .withData(barang)
+                .make();
         });
     }
     deleteBarang(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
             const barang = yield services_1.BarangService.deleteBarang(id);
-            return res.status(types_1.HttpStatusCode.Accepted).json({
-                status: 'success',
-                message: "Successfully deleted Barang",
-                data: barang
-            });
+            return (new utils_1.JsonResponse(res))
+                .success()
+                .withData(barang)
+                .make();
         });
     }
-    updateStokBarang(req, res) {
+    decreaseStokBarang(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const { stok_baru } = req.body;
-            const barang = yield services_1.BarangService.updateStokBarang(id, stok_baru);
-            return res.status(types_1.HttpStatusCode.Accepted).json({
-                status: 'success',
-                message: "Successfully updated stok",
-                data: barang
-            });
+            const { decrease_by } = req.body;
+            const barang = yield services_1.BarangService.decreaseStokBarang(id, decrease_by);
+            return (new utils_1.JsonResponse(res))
+                .success()
+                .withData(barang)
+                .make();
         });
     }
 }

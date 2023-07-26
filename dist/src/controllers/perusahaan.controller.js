@@ -10,46 +10,37 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const services_1 = require("../services");
-const types_1 = require("../common/types");
+const utils_1 = require("../utils");
 class PerusahaanController {
     getAllPerusahaan(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { q } = req.query;
-            const perusahaanList = yield services_1.PerusahaanService.searchPerusahaan(typeof q === 'string' ? q : "");
-            return res.status(types_1.HttpStatusCode.Accepted).json({
-                status: 'success',
-                message: "Successfully retrieved data",
-                data: perusahaanList
-            });
+            const perusahaanList = yield services_1.PerusahaanService.filterPerusahaan(typeof q === 'string' ? q : "");
+            return (new utils_1.JsonResponse(res))
+                .success()
+                .withData(perusahaanList)
+                .make();
         });
     }
     getPerusahaanById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
             const perusahaan = yield services_1.PerusahaanService.getPerusahaanById(id);
-            if (!perusahaan) {
-                return res.status(types_1.HttpStatusCode.NotFound).json({
-                    status: 'error',
-                    message: "Perusahaan not found",
-                    data: null
-                });
-            }
-            return res.status(types_1.HttpStatusCode.Accepted).json({
-                status: 'success',
-                message: "Successfully retrieved data",
-                data: perusahaan
-            });
+            const jsonResponse = new utils_1.JsonResponse(res);
+            return jsonResponse
+                .success()
+                .withData(perusahaan)
+                .make();
         });
     }
     createPerusahaan(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { nama, alamat, no_telp, kode } = req.body;
             const perusahaan = yield services_1.PerusahaanService.createPerusahaan(nama, alamat, no_telp, kode);
-            return res.status(types_1.HttpStatusCode.Accepted).json({
-                status: 'success',
-                message: "Successfully created perusahaan",
-                data: perusahaan
-            });
+            return (new utils_1.JsonResponse(res))
+                .success()
+                .withData(perusahaan)
+                .make();
         });
     }
     updatePerusahaan(req, res) {
@@ -57,22 +48,20 @@ class PerusahaanController {
             const { nama, alamat, no_telp, kode } = req.body;
             const { id } = req.params;
             const perusahaan = yield services_1.PerusahaanService.updatePerusahaan(id, nama, alamat, no_telp, kode);
-            return res.status(types_1.HttpStatusCode.Accepted).json({
-                status: 'success',
-                message: "Successfully updated perusahaan",
-                data: perusahaan
-            });
+            return (new utils_1.JsonResponse(res))
+                .success()
+                .withData(perusahaan)
+                .make();
         });
     }
     deletePerusahaan(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
             const perusahaan = yield services_1.PerusahaanService.deletePerusahaan(id);
-            return res.status(types_1.HttpStatusCode.Accepted).json({
-                status: 'success',
-                message: "Successfully deleted perusahaan",
-                data: perusahaan
-            });
+            return (new utils_1.JsonResponse(res))
+                .success()
+                .withData(perusahaan)
+                .make();
         });
     }
 }

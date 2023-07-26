@@ -11,11 +11,10 @@ const app = (0, express_1.default)();
 const PORT = process.env.PORT || 1234;
 const whitelist = ['http://127.0.0.1:8000', 'http://localhost:5173', 'https://ohl-fe.vercel.app'];
 app.use((0, cors_1.default)({
-    origin: whitelist // Whitelist the monolith backend URL
+    origin: whitelist
 }));
 app.use(body_parser_1.default.json());
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
 app.use('/api/v1', routes_1.default);
-exports.default = app;

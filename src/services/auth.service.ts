@@ -23,7 +23,10 @@ class AuthService {
         }
 
         const accessToken = jwt.sign(
-            username,
+            {
+                username: user.username,
+                name: user.name
+            },
             accessTokenSecret
         );
 

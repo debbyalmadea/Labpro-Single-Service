@@ -11,26 +11,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const services_1 = require("../services");
 const types_1 = require("../common/types");
+const utils_1 = require("../utils");
 class UserController {
     getSelfDetail(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const data = yield services_1.UserService.getUserByUsername(res.locals.username);
+            console.log(res.locals.user);
+            const data = yield services_1.UserService.getUserByUsername(res.locals.user.username);
+            const jsonResponse = new utils_1.JsonResponse(res);
             if (!data) {
-                return res.status(types_1.HttpStatusCode.NotFound).json({
-                    status: "error",
-                    message: "User not found",
-                    data: null
-                });
+                return jsonResponse.error(types_1.HttpStatusCode.NotFound)
+                    .withMessage("User not found")
+                    .make();
             }
             else {
-                return res.status(types_1.HttpStatusCode.Accepted).json({
-                    status: "success",
-                    message: "Successfully retrieve data",
-                    data: {
-                        username: data.username,
-                        name: data.name
-                    }
-                });
+                return jsonResponse.success()
+                    .withData({
+                    username: data.username,
+                    name: data.name
+                }).make();
             }
         });
     }

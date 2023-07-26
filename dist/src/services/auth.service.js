@@ -29,7 +29,10 @@ class AuthService {
             if (!validPassword) {
                 throw new utils_1.HttpError(types_1.HttpStatusCode.Unauthorized, 'Invalid password');
             }
-            const accessToken = jsonwebtoken_1.default.sign(username, configs_1.accessTokenSecret);
+            const accessToken = jsonwebtoken_1.default.sign({
+                username: user.username,
+                name: user.name
+            }, configs_1.accessTokenSecret);
             return {
                 user: {
                     username: user.username,

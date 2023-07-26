@@ -9,14 +9,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const library_1 = require("@prisma/client/runtime/library");
+const types_1 = require("../common/types");
 const models_1 = require("../models");
+const utils_1 = require("../utils");
 class PerusahaanService {
     getAllPerusahaan() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield models_1.Perusahaan.findMany();
+            return yield models_1.Perusahaan.findMany({
+                select: {
+                    id: true,
+                    nama: true,
+                    alamat: true,
+                    no_telp: true,
+                    kode: true
+                },
+                orderBy: [
+                    {
+                        nama: 'asc'
+                    }
+                ]
+            });
         });
     }
-    searchPerusahaan(q) {
+    filterPerusahaan(q) {
         return __awaiter(this, void 0, void 0, function* () {
             const perusahaanList = yield models_1.Perusahaan.findMany({
                 where: {
@@ -41,7 +57,12 @@ class PerusahaanService {
                     alamat: true,
                     no_telp: true,
                     kode: true
-                }
+                },
+                orderBy: [
+                    {
+                        nama: 'asc'
+                    }
+                ]
             });
             return perusahaanList;
         });
@@ -60,28 +81,18 @@ class PerusahaanService {
                     kode: true
                 }
             });
-            return perusahaan;
-        });
-    }
-    getPerusahaanByNama(nama) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const perusahaan = yield models_1.Perusahaan.findFirst({
-                where: {
-                    nama: nama
-                },
-                select: {
-                    id: true,
-                    nama: true,
-                    alamat: true,
-                    no_telp: true,
-                    kode: true
-                }
-            });
+            if (!perusahaan) {
+                throw new utils_1.HttpError(types_1.HttpStatusCode.NotFound, "Perusahaan not found");
+            }
             return perusahaan;
         });
     }
     createPerusahaan(nama, alamat, no_telp, kode) {
         return __awaiter(this, void 0, void 0, function* () {
+            const kodeRegex = /\b[A-Z]{3}\b/;
+            if (!kodeRegex.test(kode)) {
+                throw new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null);
+            }
             const createdPerusahaan = yield models_1.Perusahaan.create({
                 data: {
                     nama: nama,
@@ -102,42 +113,60 @@ class PerusahaanService {
     }
     updatePerusahaan(id, nama, alamat, no_telp, kode) {
         return __awaiter(this, void 0, void 0, function* () {
-            const updatedPerusahaan = yield models_1.Perusahaan.update({
-                where: {
-                    id: id
-                },
-                data: {
-                    nama: nama,
-                    alamat: alamat,
-                    no_telp: no_telp,
-                    kode: kode
-                },
-                select: {
-                    id: true,
-                    nama: true,
-                    alamat: true,
-                    no_telp: true,
-                    kode: true
+            const kodeRegex = /\b[A-Z]{3}\b/;
+            if (!kodeRegex.test(kode)) {
+                throw new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null);
+            }
+            try {
+                const updatedPerusahaan = yield models_1.Perusahaan.update({
+                    where: {
+                        id: id
+                    },
+                    data: {
+                        nama: nama,
+                        alamat: alamat,
+                        no_telp: no_telp,
+                        kode: kode
+                    },
+                    select: {
+                        id: true,
+                        nama: true,
+                        alamat: true,
+                        no_telp: true,
+                        kode: true
+                    }
+                });
+                return updatedPerusahaan;
+            }
+            catch (error) {
+                if (error instanceof library_1.PrismaClientKnownRequestError) {
+                    throw new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Perusahaan not found');
                 }
-            });
-            return updatedPerusahaan;
+            }
         });
     }
     deletePerusahaan(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const deletedPerusahaan = yield models_1.Perusahaan.delete({
-                where: {
-                    id: id,
-                },
-                select: {
-                    id: true,
-                    nama: true,
-                    alamat: true,
-                    no_telp: true,
-                    kode: true
+            try {
+                const deletedPerusahaan = yield models_1.Perusahaan.delete({
+                    where: {
+                        id: id,
+                    },
+                    select: {
+                        id: true,
+                        nama: true,
+                        alamat: true,
+                        no_telp: true,
+                        kode: true
+                    }
+                });
+                return deletedPerusahaan;
+            }
+            catch (error) {
+                if (error instanceof library_1.PrismaClientKnownRequestError) {
+                    throw new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Perusahaan not found');
                 }
-            });
-            return deletedPerusahaan;
+            }
         });
     }
 }

@@ -61,16 +61,16 @@ const deleteBarangSchema = z.object({
     })
 })
 
-const updateStokBarangSchema = z.object({
+const decreaseStokBarangSchema = z.object({
     params: z.object({
         id: z.string({
             required_error: "Params Id is required",
         }),
     }),
     body: z.object({
-        stok: z.number({
-            required_error: "Stok is required"
-        }).int({message: "Stok must be integer"}).min(0, {message: "Stok can't be negative"}),
+        decrease_by: z.number({
+            required_error: "Decrease by is required"
+        }).int({message: "Decrease by must be integer"}).min(0, {message: "Decrease by can't be negative"}),
     })
 })
 
@@ -79,5 +79,5 @@ export {
     createBarangSchema,
     updateBarangSchema,
     deleteBarangSchema,
-    updateStokBarangSchema
+    decreaseStokBarangSchema
 }

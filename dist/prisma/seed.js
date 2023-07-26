@@ -13,8 +13,8 @@ const faker_1 = require("@faker-js/faker");
 const client_1 = require("@prisma/client");
 const utils_1 = require("../src/utils");
 const prisma = new client_1.PrismaClient();
-const PERUSAHAAN_SEEDS_SIZE = 5;
-const BARANG_PER_PERUSAHAAN_SIZE = 4;
+const PERUSAHAAN_SEEDS_SIZE = 3;
+const BARANG_PER_PERUSAHAAN_SIZE = 2;
 const userData = {
     username: "debbyalmadea",
     name: "Debby Almadea",

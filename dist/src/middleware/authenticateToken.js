@@ -8,7 +8,7 @@ const configs_1 = require("../configs");
 const types_1 = require("../common/types");
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
-    const token = authHeader;
+    let token = authHeader;
     if (!token) {
         return res.status(types_1.HttpStatusCode.Unauthorized).json({
             status: "error",
@@ -16,7 +16,10 @@ const authenticateToken = (req, res, next) => {
             data: null
         });
     }
-    jsonwebtoken_1.default.verify(token, configs_1.accessTokenSecret, (err, username) => {
+    if (token === null || token === void 0 ? void 0 : token.includes('Bearer')) {
+        token = token.split(' ')[1];
+    }
+    jsonwebtoken_1.default.verify(token, configs_1.accessTokenSecret, (err, user) => {
         if (err) {
             return res.status(types_1.HttpStatusCode.Forbidden).json({
                 status: "error",
@@ -24,7 +27,7 @@ const authenticateToken = (req, res, next) => {
                 data: null
             });
         }
-        res.locals.username = username;
+        res.locals.user = user;
         next();
     });
 };

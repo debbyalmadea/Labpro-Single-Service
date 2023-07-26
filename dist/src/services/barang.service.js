@@ -13,13 +13,28 @@ const _1 = require(".");
 const types_1 = require("../common/types");
 const models_1 = require("../models");
 const utils_1 = require("../utils");
+const library_1 = require("@prisma/client/runtime/library");
 class BarangService {
     getAllBarang() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield models_1.Barang.findMany();
+            return yield models_1.Barang.findMany({
+                select: {
+                    id: true,
+                    nama: true,
+                    harga: true,
+                    stok: true,
+                    perusahaan_id: true,
+                    kode: true
+                },
+                orderBy: [
+                    {
+                        nama: 'asc'
+                    }
+                ]
+            });
         });
     }
-    searchBarang(q, perusahaan_id) {
+    filterBarang(q, perusahaan_id) {
         return __awaiter(this, void 0, void 0, function* () {
             const barangList = yield models_1.Barang.findMany({
                 where: {
@@ -48,7 +63,12 @@ class BarangService {
                     stok: true,
                     perusahaan_id: true,
                     kode: true
-                }
+                },
+                orderBy: [
+                    {
+                        nama: 'asc'
+                    }
+                ]
             });
             return barangList;
         });
@@ -68,11 +88,18 @@ class BarangService {
                     kode: true
                 }
             });
+            if (!barang) {
+                throw new utils_1.HttpError(types_1.HttpStatusCode.NotFound, "Barang not found");
+            }
             return barang;
         });
     }
     createBarang(nama, harga, stok, perusahaan_id, kode) {
         return __awaiter(this, void 0, void 0, function* () {
+            const kodeRegex = /\b[A-Z]{3}\b/;
+            if (!kodeRegex.test(kode)) {
+                throw new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null);
+            }
             const perusahaan = yield _1.PerusahaanService.getPerusahaanById(perusahaan_id);
             if (!perusahaan) {
                 throw new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Perusahaan not found', null);
@@ -99,70 +126,97 @@ class BarangService {
     }
     updateBarang(id, nama, harga, stok, perusahaan_id, kode) {
         return __awaiter(this, void 0, void 0, function* () {
+            const kodeRegex = /\b[A-Z]{3}\b/;
+            if (!kodeRegex.test(kode)) {
+                throw new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null);
+            }
             const perusahaan = yield _1.PerusahaanService.getPerusahaanById(perusahaan_id);
             if (!perusahaan) {
                 throw new utils_1.HttpError(types_1.HttpStatusCode.NotFound, 'Perusahaan not found', null);
             }
-            const updatedBarang = yield models_1.Barang.update({
-                where: {
-                    id: id
-                },
-                data: {
-                    nama: nama,
-                    harga: harga,
-                    stok: stok,
-                    perusahaan_id: perusahaan_id,
-                    kode: kode
-                },
-                select: {
-                    id: true,
-                    nama: true,
-                    harga: true,
-                    stok: true,
-                    perusahaan_id: true,
-                    kode: true
+            try {
+                const updatedBarang = yield models_1.Barang.update({
+                    where: {
+                        id: id
+                    },
+                    data: {
+                        nama: nama,
+                        harga: harga,
+                        stok: stok,
+                        perusahaan_id: perusahaan_id,
+                        kode: kode
+                    },
+                    select: {
+                        id: true,
+                        nama: true,
+                        harga: true,
+                        stok: true,
+                        perusahaan_id: true,
+                        kode: true
+                    }
+                });
+                return updatedBarang;
+            }
+            catch (error) {
+                if (error instanceof library_1.PrismaClientKnownRequestError) {
+                    throw new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Barang not found');
                 }
-            });
-            return updatedBarang;
+            }
         });
     }
     deleteBarang(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const deletedBarang = yield models_1.Barang.delete({
-                where: {
-                    id: id,
-                },
-                select: {
-                    id: true,
-                    nama: true,
-                    harga: true,
-                    stok: true,
-                    perusahaan_id: true,
-                    kode: true
+            try {
+                const deletedBarang = yield models_1.Barang.delete({
+                    where: {
+                        id: id,
+                    },
+                    select: {
+                        id: true,
+                        nama: true,
+                        harga: true,
+                        stok: true,
+                        perusahaan_id: true,
+                        kode: true
+                    }
+                });
+                return deletedBarang;
+            }
+            catch (error) {
+                if (error instanceof library_1.PrismaClientKnownRequestError) {
+                    throw new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Barang not found');
                 }
-            });
-            return deletedBarang;
+            }
         });
     }
-    updateStokBarang(id, stok_baru) {
+    decreaseStokBarang(id, stok) {
         return __awaiter(this, void 0, void 0, function* () {
-            const updatedBarang = yield models_1.Barang.update({
-                where: {
-                    id: id
-                },
-                data: {
-                    stok: stok_baru
-                },
-                select: {
-                    id: true,
-                    nama: true,
-                    harga: true,
-                    stok: true,
-                    perusahaan_id: true,
-                    kode: true
+            try {
+                const updatedBarang = yield models_1.Barang.update({
+                    where: {
+                        id: id
+                    },
+                    data: {
+                        stok: {
+                            decrement: stok
+                        }
+                    },
+                    select: {
+                        id: true,
+                        nama: true,
+                        harga: true,
+                        stok: true,
+                        perusahaan_id: true,
+                        kode: true
+                    }
+                });
+                return updatedBarang;
+            }
+            catch (error) {
+                if (error instanceof library_1.PrismaClientKnownRequestError) {
+                    throw new utils_1.HttpError(types_1.HttpStatusCode.BadRequest, 'Barang not found');
                 }
-            });
-            return updatedBarang;
+            }
         });
     }
 }

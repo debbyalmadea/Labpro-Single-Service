@@ -10,17 +10,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const services_1 = require("../services");
-const types_1 = require("../common/types");
+const utils_1 = require("../utils");
 class AuthController {
     logIn(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { username, password } = req.body;
             const data = yield services_1.AuthService.logIn(username, password);
-            return res.status(types_1.HttpStatusCode.Accepted).json({
-                status: "success",
-                message: "Log in Success!",
-                data: data
-            });
+            return (new utils_1.JsonResponse(res))
+                .success()
+                .withData(data)
+                .withMessage('Log in berhasil')
+                .make();
         });
     }
 }

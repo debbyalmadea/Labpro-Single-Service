@@ -1,11 +1,27 @@
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { HttpStatusCode } from "../common/types";
 import { Perusahaan } from "../models";
+import { HttpError } from "../utils";
 
 class PerusahaanService {
     async getAllPerusahaan() {
-        return await Perusahaan.findMany();
+        return await Perusahaan.findMany({
+            select: {
+                id: true,
+                nama: true,
+                alamat: true,
+                no_telp: true,
+                kode: true
+            },
+            orderBy: [
+                {
+                    nama: 'asc'
+                }
+            ]
+        });
     }
 
-    async searchPerusahaan(q?: string) {
+    async filterPerusahaan(q?: string) {
         const perusahaanList = await Perusahaan.findMany({
             where: {
                 OR: [
@@ -29,7 +45,12 @@ class PerusahaanService {
                 alamat: true,
                 no_telp: true,
                 kode: true
-            }
+            },
+            orderBy: [
+                {
+                    nama: 'asc'
+                }
+            ]
         })
 
         return perusahaanList;
@@ -49,27 +70,19 @@ class PerusahaanService {
             }
         });
 
-        return perusahaan;
-    }
-
-    async getPerusahaanByNama(nama: string) {
-        const perusahaan = await Perusahaan.findFirst({
-            where: {
-                nama: nama
-            },
-            select: {
-                id: true,
-                nama: true,
-                alamat: true,
-                no_telp: true,
-                kode: true
-            }
-        })
+        if (!perusahaan) {
+            throw new HttpError(HttpStatusCode.NotFound, "Perusahaan not found")
+        }
 
         return perusahaan;
     }
 
     async createPerusahaan(nama: string, alamat: string, no_telp: string, kode: string) {
+        const kodeRegex = /\b[A-Z]{3}\b/
+        if (!kodeRegex.test(kode)) {
+            throw new HttpError(HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null);
+        }
+
         const createdPerusahaan = await Perusahaan.create({
             data: {
                 nama: nama,
@@ -90,43 +103,60 @@ class PerusahaanService {
     }
 
     async updatePerusahaan(id: string, nama: string, alamat: string, no_telp: string, kode: string) {
-        const updatedPerusahaan = await Perusahaan.update({
-            where: {
-                id: id
-            },
-            data: {
-                nama: nama,
-                alamat: alamat,
-                no_telp: no_telp,
-                kode: kode
-            },
-            select: {
-                id: true,
-                nama: true,
-                alamat: true,
-                no_telp: true,
-                kode: true
-            }
-        });
+        const kodeRegex = /\b[A-Z]{3}\b/
+        if (!kodeRegex.test(kode)) {
+            throw new HttpError(HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null);
+        }
 
-        return updatedPerusahaan;
+        try {
+            const updatedPerusahaan = await Perusahaan.update({
+                where: {
+                    id: id
+                },
+                data: {
+                    nama: nama,
+                    alamat: alamat,
+                    no_telp: no_telp,
+                    kode: kode
+                },
+                select: {
+                    id: true,
+                    nama: true,
+                    alamat: true,
+                    no_telp: true,
+                    kode: true
+                }
+            });
+    
+            return updatedPerusahaan;
+        } catch (error) {
+            if (error instanceof PrismaClientKnownRequestError) {
+                throw new HttpError(HttpStatusCode.BadRequest, 'Perusahaan not found');
+            }
+        }
     }
 
     async deletePerusahaan(id: string) {
-        const deletedPerusahaan = await Perusahaan.delete({
-            where: {
-                id: id,
-            },
-            select: {
-                id: true,
-                nama: true,
-                alamat: true,
-                no_telp: true,
-                kode: true
+        try {
+            const deletedPerusahaan = await Perusahaan.delete({
+                where: {
+                    id: id,
+                },
+                select: {
+                    id: true,
+                    nama: true,
+                    alamat: true,
+                    no_telp: true,
+                    kode: true
+                }
+            });
+    
+            return deletedPerusahaan;
+        } catch (error) {
+            if (error instanceof PrismaClientKnownRequestError) {
+                throw new HttpError(HttpStatusCode.BadRequest, 'Perusahaan not found');
             }
-        });
-
-        return deletedPerusahaan;
+        }
     }   
 }
 

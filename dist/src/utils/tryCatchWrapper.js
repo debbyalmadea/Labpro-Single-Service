@@ -14,18 +14,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const httpError_1 = __importDefault(require("./httpError"));
 const types_1 = require("../common/types");
+const library_1 = require("@prisma/client/runtime/library");
 const tryCatchWrapper = (handler) => {
     return (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             yield handler(req, res);
         }
         catch (error) {
-            console.log('error', error);
             if (error instanceof httpError_1.default) {
                 return res.status(error.statusCode).json({
                     status: 'error',
                     message: error.message,
                     data: error.data,
+                });
+            }
+            if (error instanceof library_1.PrismaClientKnownRequestError) {
+                res.status(types_1.HttpStatusCode.BadRequest).json({
+                    status: 'error',
+                    message: error.message,
+                    data: null,
                 });
             }
             return res.status(types_1.HttpStatusCode.InternalServerError).json({

@@ -1,26 +1,24 @@
 import { Request, Response } from "express";
 import { UserService } from "../services";
 import { HttpStatusCode } from "../common/types";
+import { JsonResponse } from "../utils";
 
 class UserController {
     async getSelfDetail(req: Request, res: Response) {
-        const data = await UserService.getUserByUsername(res.locals.username);
+        console.log(res.locals.user);
+        const data = await UserService.getUserByUsername(res.locals.user.username);
 
+        const jsonResponse = new JsonResponse(res);
         if (!data) {
-            return res.status(HttpStatusCode.NotFound).json({
-                status: "error",
-                message: "User not found",
-                data: null
-            });
+            return jsonResponse.error(HttpStatusCode.NotFound)
+                    .withMessage("User not found")
+                    .make();
         } else {
-            return res.status(HttpStatusCode.Accepted).json({
-                status: "success",
-                message: "Successfully retrieve data",
-                data: {
-                    username: data.username,
-                    name: data.name
-                }
-            });
+             return jsonResponse.success()
+                    .withData({
+                        username: data.username,
+                        name: data.name
+                    }).make();
         }
     }
 }
