@@ -3,10 +3,8 @@ import { JsonResponse } from "../utils";
 import { IAuthController, IAuthService } from "../common/types";
 
 class AuthController implements IAuthController {
-    private authService: IAuthService;
-
-    constructor(authService: IAuthService) {
-        this.authService = authService;
+    constructor(private authService: IAuthService) {
+        this.logIn = this.logIn.bind(this);
     }
 
     async logIn(req: Request, res: Response) {

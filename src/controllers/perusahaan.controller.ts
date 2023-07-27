@@ -3,10 +3,12 @@ import { JsonResponse } from "../utils";
 import { IPerusahaanController, IPerusahaanService } from "../common/types";
 
 class PerusahaanController implements IPerusahaanController {
-    private perusahaanService: IPerusahaanService;
-
-    constructor(perusahaanService: IPerusahaanService) {
-        this.perusahaanService = perusahaanService;
+    constructor(private perusahaanService: IPerusahaanService) {
+        this.getAllPerusahaan = this.getAllPerusahaan.bind(this);
+        this.getPerusahaanById = this.getPerusahaanById.bind(this);
+        this.createPerusahaan = this.createPerusahaan.bind(this);
+        this.updatePerusahaan = this.updatePerusahaan.bind(this);
+        this.deletePerusahaan = this.deletePerusahaan.bind(this);
     }
 
     async getAllPerusahaan(req: Request, res: Response) {

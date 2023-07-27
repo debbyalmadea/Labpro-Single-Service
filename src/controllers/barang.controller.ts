@@ -3,10 +3,13 @@ import { JsonResponse } from "../utils";
 import { IBarangController, IBarangService } from "../common/types";
 
 class BarangController implements IBarangController {
-    private barangService: IBarangService;
-
-    constructor(barangService: IBarangService) {
-        this.barangService = barangService;
+    constructor(private barangService: IBarangService) {
+        this.getAllBarang = this.getAllBarang.bind(this);
+        this.getBarangById = this.getBarangById.bind(this);
+        this.createBarang = this.createBarang.bind(this);
+        this.updateBarang = this.updateBarang.bind(this);
+        this.deleteBarang = this.deleteBarang.bind(this);
+        this.decreaseStokBarang = this.decreaseStokBarang.bind(this);
     }
 
     async getAllBarang(req: Request, res: Response) {
