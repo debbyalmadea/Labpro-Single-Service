@@ -18,3 +18,4 @@ app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
 app.use('/api/v1', routes_1.default);
+exports.default = app;

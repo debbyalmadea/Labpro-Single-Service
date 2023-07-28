@@ -13,6 +13,12 @@ const utils_1 = require("../utils");
 class BarangController {
     constructor(barangService) {
         this.barangService = barangService;
+        this.getAllBarang = this.getAllBarang.bind(this);
+        this.getBarangById = this.getBarangById.bind(this);
+        this.createBarang = this.createBarang.bind(this);
+        this.updateBarang = this.updateBarang.bind(this);
+        this.deleteBarang = this.deleteBarang.bind(this);
+        this.decreaseStokBarang = this.decreaseStokBarang.bind(this);
     }
     getAllBarang(req, res) {
         return __awaiter(this, void 0, void 0, function* () {

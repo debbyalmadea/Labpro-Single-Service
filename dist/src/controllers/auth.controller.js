@@ -13,6 +13,7 @@ const utils_1 = require("../utils");
 class AuthController {
     constructor(authService) {
         this.authService = authService;
+        this.logIn = this.logIn.bind(this);
     }
     logIn(req, res) {
         return __awaiter(this, void 0, void 0, function* () {

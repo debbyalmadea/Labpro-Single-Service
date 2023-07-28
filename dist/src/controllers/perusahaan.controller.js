@@ -13,6 +13,11 @@ const utils_1 = require("../utils");
 class PerusahaanController {
     constructor(perusahaanService) {
         this.perusahaanService = perusahaanService;
+        this.getAllPerusahaan = this.getAllPerusahaan.bind(this);
+        this.getPerusahaanById = this.getPerusahaanById.bind(this);
+        this.createPerusahaan = this.createPerusahaan.bind(this);
+        this.updatePerusahaan = this.updatePerusahaan.bind(this);
+        this.deletePerusahaan = this.deletePerusahaan.bind(this);
     }
     getAllPerusahaan(req, res) {
         return __awaiter(this, void 0, void 0, function* () {

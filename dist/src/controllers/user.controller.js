@@ -13,10 +13,10 @@ const utils_1 = require("../utils");
 class UserController {
     constructor(userService) {
         this.userService = userService;
+        this.getSelfDetail = this.getSelfDetail.bind(this);
     }
     getSelfDetail(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(res.locals.user);
             const data = yield this.userService.getUserByUsername(res.locals.user.username);
             return (new utils_1.JsonResponse(res)).success()
                 .withData({
