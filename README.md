@@ -25,36 +25,40 @@ cd Labpro-Single-Service
 3. Run the container using `docker-compose up -d`
 4. The base path for the API is `<domain>/api/v1`
 
-### Seeding the database
+### Migrating and seeding the database
 1. Open the CLI for the container using the following command:
-```
-docker ps
-docker exec -it <container-id> sh
-```
-2. Run the seeding by `npx prisma seed`
+   ```
+   docker ps
+   docker exec -it <container-id> sh
+   ```
+   or
+   ```
+   docker exec -it <names> sh
+   ```
+2. Run the migration and seeding by `bash start.sh`
 3. Use the following username and password as admin
-```
-username: debbyalmadea
-password: this_is_a_password!
-```
+   ```
+   username: debbyalmadea
+   password: this_is_a_password!
+   ```
 
 ### Additional Notes
 - If you want to run the server in development mode with auto-reloading on code changes, you can use the following command:
-```
+   ```
     npm run dev
-```
+   ```
 - If you got prisma error try running the following command
-```
+   ```
     npx prisma generate
     npx prisma migrate dev --name init
-```
+   ```
 - If you got postgresql connection error, check your postgresql database and change the `.env` file to match your postgresql settings
 - The app only whitelisted the following domain
-```
-http://127.0.0.1:8000
-http://localhost:5173
-https://ohl-fe.vercel.app
-```
+   ```
+   http://127.0.0.1:8000
+   http://localhost:5173
+   https://ohl-fe.vercel.app
+  ```
 
 ## Design Pattern
 1. Chain of Responsibility

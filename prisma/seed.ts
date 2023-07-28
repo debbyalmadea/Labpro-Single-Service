@@ -4,8 +4,8 @@ import { hasher } from '../src/utils';
 
 const prisma = new PrismaClient()
 
-const PERUSAHAAN_SEEDS_SIZE = 3
-const BARANG_PER_PERUSAHAAN_SIZE = 2
+const PERUSAHAAN_SEEDS_SIZE = 5
+const BARANG_PER_PERUSAHAAN_SIZE = 4
 
 const userData = {
         username: "debbyalmadea",

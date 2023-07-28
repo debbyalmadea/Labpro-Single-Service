@@ -1,4 +1,7 @@
 version: '3.9'
+networks:
+  singleservice:
+
 services:
   db:
     image: postgres
@@ -9,6 +12,10 @@ services:
       POSTGRES_DB: ${DB_NAME}
     ports:
       - "5433:5432"  
+    volumes:
+      - ./docker/postgres:/user/lib/postgresql/data
+    networks:
+      - singleservice
   server:
     build: .
     ports:
@@ -17,3 +24,5 @@ services:
       DATABASE_URL: ${DATABASE_URL}
     depends_on:
       - db
+    networks:
+      - singleservice

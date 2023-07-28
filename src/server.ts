@@ -17,3 +17,5 @@ app.listen(PORT, () => {
 });
 
 app.use('/api/v1', routes);
+
+export default app;

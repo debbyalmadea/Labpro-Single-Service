@@ -1,16 +1,3 @@
 {
-    "version": 2,
-    "name": "labpro_single_service",
-    "builds": [
-        {
-            "src": "dist/src/server.ts",
-            "use": "@vercel/node"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "dist/src/server.ts"
-        }
-    ]
-}
+    "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+  }

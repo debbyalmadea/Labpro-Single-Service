@@ -8,8 +8,9 @@ RUN rm -rf node_modules
 RUN npm install
 COPY . .
 
+RUN chmod +x start.sh
+
 RUN npx prisma generate
-RUN npx prisma migrate dev --name init
 
 EXPOSE 1234
 
