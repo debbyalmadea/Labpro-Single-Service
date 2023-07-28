@@ -8,7 +8,7 @@ const tryCatchWrapper = (
     return async (req: Request, res: Response) => {
         try {
           await handler(req, res);
-        } catch (error) {          
+        } catch (error) {   
           errorHandlerChain.handle(res, error);
         }
     };

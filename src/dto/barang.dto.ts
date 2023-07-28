@@ -24,7 +24,7 @@ const createBarangSchema = z.object({
         }),
         kode: z.string({
             required_error: "Kode is required",
-        }).regex(/\b[A-Z]{3}\b/, {message: "Kode must be 3 uppercase letter"})
+        })
     })
 })
 
@@ -49,7 +49,7 @@ const updateBarangSchema = z.object({
         }),
         kode: z.string({
             required_error: "Kode is required",
-        }).regex(/\b[A-Z]{3}\b/, {message: "Kode must be 3 uppercase letter"})
+        })
     })
 })
     

@@ -31,7 +31,7 @@ model Barang {
   nama          String
   harga         Int
   stok          Int
-  kode          String
+  kode          String     @unique
   perusahaan_id String
   created_at    DateTime   @default(now())
   updated_at    DateTime   @updatedAt

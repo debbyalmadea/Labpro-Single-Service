@@ -278,7 +278,6 @@ describe('Barang Service', () => {
       });
     
     it('should return filtered barang by company with selected attributes ordered by name in ascending order when provided with company id', async () => {
-        const perusahaan_id = 'clk77y1zt0001of62mbhuhohv';
         const _mockBarangList = [
             {
                 "id": "clk77y217000cof62bfo3xc1v",
@@ -451,21 +450,41 @@ describe('Barang Service', () => {
         expect(result).toEqual(mockCreatedBarang);
       });
     
-      it('should throw an error when the kode is invalid', async () => {
-        const nama = 'Barang 2';
-        const harga = 200;
-        const stok = 20;
-        const perusahaan_id = 'perusahaan_id';
-        const kode = 'abc'; 
+      it('should throw an error when the kode is duplicated', async () => {
+        const nama = 'Barang 1';
+        const harga = 100;
+        const stok = 50;
+        const perusahaan_id = 'clk75yk1k0004wh1in65b2rgz';
+        const kode = 'ABC';
     
+        const mockPerusahaan = {
+			"id": "clk75yk1k0004wh1in65b2rgz",
+			"nama": "Erdman and Sons",
+			"alamat": "4450 Joel Place",
+			"no_telp": "797-761-9405 x19749",
+			"kode": "XUN"
+		}
+    
+        const mockCreatedBarang = {
+			id: "barangid",
+			nama: nama,
+			harga: 100,
+            stok: 50,
+            perusahaan_id: 'clk75yk1k0004wh1in65b2rgz',
+            kode: 'ABC',
+            created_at: new Date(),
+            updated_at: new Date(),
+		}
+    
+        mockedGetPerusahaanById.mockResolvedValue(mockPerusahaan);
+        mockedBarangCreate.mockImplementation(() => {
+            throw new PrismaClientKnownRequestError('Kode must be unique', {clientVersion: 'v1.0', code: '400'});
+        })
+        
         await expect(barangService.createBarang(nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(
-          new HttpError(HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null)
+            new HttpError(HttpStatusCode.BadRequest, 'Kode must be unique')
         );
-    
-        expect(mockedGetPerusahaanById).not.toHaveBeenCalled();
-    
-        expect(mockedBarangCreate).not.toHaveBeenCalled();
-      });
+    });
     
       it('should throw an error when the perusahaan is not found', async () => {
         const nama = 'Barang 3';
@@ -551,22 +570,22 @@ describe('Barang Service', () => {
         expect(result).toEqual(mockUpdatedBarang);
       });
     
-    it('should throw an error when the kode is invalid', async () => {
+    it('should throw an error when the kode is duplicated', async () => {
         const id = 'barang_id';
         const nama = 'Invalid Barang';
         const harga = 400;
         const stok = 20;
         const perusahaan_id = 'perusahaan_id';
         const kode = 'AS3'; 
-    
+        
+        mockedBarangUpdate.mockImplementation(() => {
+            throw new PrismaClientKnownRequestError('Unique constraint {kode}', {clientVersion: 'v1.0', code: '400'});
+        })
+
         await expect(barangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(
-          new HttpError(HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null)
+          new HttpError(HttpStatusCode.BadRequest, 'Kode must be unique', null)
         );
-    
-        expect(mockedGetPerusahaanById).not.toHaveBeenCalled();
-    
-        expect(mockedBarangUpdate).not.toHaveBeenCalled();
-      });
+    });
     
     it('should throw an error when the perusahaan is not found', async () => {
         const id = 'barang_id';

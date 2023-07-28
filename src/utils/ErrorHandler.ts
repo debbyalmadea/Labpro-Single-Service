@@ -15,11 +15,10 @@ abstract class ErrorHandler {
 
     handle(res: Response, error: unknown): Response {
         const jsonResponse = new JsonResponse(res);
-
         if (this.canHandle(error)) {
             return this.getResponse(jsonResponse, error);
         } else if (this.nextHandler) {
-            return this.nextHandler.getResponse(jsonResponse, error);
+            return this.nextHandler.handle(res, error);
         } else {
             return jsonResponse
                 .error(HttpStatusCode.InternalServerError)
@@ -64,9 +63,15 @@ class PrismaClientKnownRequestErrorHandler extends ErrorHandler {
     }
 
     protected getResponse(jsonResponse: IJsonResponse, error: PrismaClientKnownRequestError): Response {
+        let message = 'Something is wrong while connecting to the Database';
+        let code = HttpStatusCode.InternalServerError;
+        if (error.message.includes('Unique constraint')) {
+            message = 'Kode must be unique'
+            code = HttpStatusCode.BadRequest
+        }
         return jsonResponse
-                .error(HttpStatusCode.InternalServerError)
-                .withMessage("Something is wrong while fetching data from database")
+                .error(code)
+                .withMessage(message)
                 .make();
     }
 }

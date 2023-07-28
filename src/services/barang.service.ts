@@ -92,44 +92,43 @@ class BarangService implements IBarangService {
 
 
     async createBarang(nama: string, harga: number, stok: number, perusahaan_id: string, kode: string) {
-        const kodeRegex = /\b[A-Z]{3}\b/
-        if (!kodeRegex.test(kode)) {
-            throw new HttpError(HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null);
-        }
-        
         const perusahaan = await this.perusahaanService.getPerusahaanById(perusahaan_id);
         
         if (!perusahaan) {
             throw new HttpError(HttpStatusCode.NotFound, 'Perusahaan not found', null);
         }
 
-        const createdBarang = await this.barangModel.create({
-            data: {
-                nama: nama,
-                harga: harga,
-                stok: stok,
-                perusahaan_id: perusahaan_id,
-                kode: kode
-            },
-            select: {
-                id: true,
-                nama: true,
-                harga: true, 
-                stok: true,
-                perusahaan_id: true,
-                kode: true
-            }
-        });
+        try {
+            const createdBarang = await this.barangModel.create({
+                data: {
+                    nama: nama,
+                    harga: harga,
+                    stok: stok,
+                    perusahaan_id: perusahaan_id,
+                    kode: kode
+                },
+                select: {
+                    id: true,
+                    nama: true,
+                    harga: true, 
+                    stok: true,
+                    perusahaan_id: true,
+                    kode: true
+                }
+            });
+    
+            return createdBarang;
 
-        return createdBarang;
+        } catch (error) {
+            if (error instanceof PrismaClientKnownRequestError) {
+                throw new HttpError(HttpStatusCode.BadRequest, 'Kode must be unique');
+            }
+
+            throw new HttpError(HttpStatusCode.InternalServerError, 'Something is wrong while processing your request');
+        }
     }
 
     async updateBarang(id: string, nama: string, harga: number, stok: number, perusahaan_id: string, kode: string) {
-        const kodeRegex = /\b[A-Z]{3}\b/
-        if (!kodeRegex.test(kode)) {
-            throw new HttpError(HttpStatusCode.BadRequest, 'Kode must be 3 uppercase letters', null);
-        }
-
         const perusahaan = await this.perusahaanService.getPerusahaanById(perusahaan_id);
         
         if (!perusahaan) {
@@ -161,7 +160,11 @@ class BarangService implements IBarangService {
             return updatedBarang;
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
-                throw new HttpError(HttpStatusCode.BadRequest, 'Barang not found');
+                let message = 'Barang not found';
+                if (error.message.includes('Unique constraint')) {
+                    message = 'Kode must be unique'
+                }
+                throw new HttpError(HttpStatusCode.BadRequest, message);
             }
 
             throw new HttpError(HttpStatusCode.InternalServerError, 'Something is wrong while processing your request');
