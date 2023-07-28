@@ -449,10 +449,10 @@ describe('Barang Service', () => {
     
         expect(result).toEqual(mockCreatedBarang);
       });
-    
-      it('should throw an error when the kode is duplicated', async () => {
+
+      it('should create an error when harga <= 0', async () => {
         const nama = 'Barang 1';
-        const harga = 100;
+        const harga = 0;
         const stok = 50;
         const perusahaan_id = 'clk75yk1k0004wh1in65b2rgz';
         const kode = 'ABC';
@@ -474,6 +474,69 @@ describe('Barang Service', () => {
             kode: 'ABC',
             created_at: new Date(),
             updated_at: new Date(),
+		}
+    
+        mockedGetPerusahaanById.mockResolvedValue(mockPerusahaan);
+        mockedBarangCreate.mockResolvedValue(mockCreatedBarang);
+        
+        await expect(barangService.createBarang(nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(
+            new HttpError(HttpStatusCode.BadRequest, 'Harga must be > 0')
+        );
+        
+        expect(mockedGetPerusahaanById).toHaveBeenCalledTimes(1);
+        expect(mockedGetPerusahaanById).toHaveBeenCalledWith(perusahaan_id);
+      });
+
+      it('should create an error when stok < 0', async () => {
+        const nama = 'Barang 1';
+        const harga = 50;
+        const stok = -1;
+        const perusahaan_id = 'clk75yk1k0004wh1in65b2rgz';
+        const kode = 'ABC';
+    
+        const mockPerusahaan = {
+			"id": "clk75yk1k0004wh1in65b2rgz",
+			"nama": "Erdman and Sons",
+			"alamat": "4450 Joel Place",
+			"no_telp": "797-761-9405 x19749",
+			"kode": "XUN"
+		}
+    
+        const mockCreatedBarang = {
+			id: "barangid",
+			nama: nama,
+			harga: 100,
+            stok: 50,
+            perusahaan_id: 'clk75yk1k0004wh1in65b2rgz',
+            kode: 'ABC',
+            created_at: new Date(),
+            updated_at: new Date(),
+		}
+    
+        mockedGetPerusahaanById.mockResolvedValue(mockPerusahaan);
+        mockedBarangCreate.mockResolvedValue(mockCreatedBarang);
+        
+        await expect(barangService.createBarang(nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(
+            new HttpError(HttpStatusCode.BadRequest, 'Stok must be >= 0')
+        );
+
+        expect(mockedGetPerusahaanById).toHaveBeenCalledTimes(1);
+        expect(mockedGetPerusahaanById).toHaveBeenCalledWith(perusahaan_id);
+      });
+    
+      it('should throw an error when the kode is duplicated', async () => {
+        const nama = 'Barang 1';
+        const harga = 100;
+        const stok = 50;
+        const perusahaan_id = 'clk75yk1k0004wh1in65b2rgz';
+        const kode = 'ABC';
+    
+        const mockPerusahaan = {
+			"id": "clk75yk1k0004wh1in65b2rgz",
+			"nama": "Erdman and Sons",
+			"alamat": "4450 Joel Place",
+			"no_telp": "797-761-9405 x19749",
+			"kode": "XUN"
 		}
     
         mockedGetPerusahaanById.mockResolvedValue(mockPerusahaan);
@@ -568,6 +631,82 @@ describe('Barang Service', () => {
         });
     
         expect(result).toEqual(mockUpdatedBarang);
+      });
+    
+      it('should create an error when harga <= 0', async () => {
+        const id = 'barang_id';
+        const nama = 'Barang 1';
+        const harga = 0;
+        const stok = 50;
+        const perusahaan_id = 'clk75yk1k0004wh1in65b2rgz';
+        const kode = 'ABC';
+    
+        const mockPerusahaan = {
+			"id": "clk75yk1k0004wh1in65b2rgz",
+			"nama": "Erdman and Sons",
+			"alamat": "4450 Joel Place",
+			"no_telp": "797-761-9405 x19749",
+			"kode": "XUN"
+		}
+    
+        const mockCreatedBarang = {
+			id: "barangid",
+			nama: nama,
+			harga: 100,
+            stok: 50,
+            perusahaan_id: 'clk75yk1k0004wh1in65b2rgz',
+            kode: 'ABC',
+            created_at: new Date(),
+            updated_at: new Date(),
+		}
+    
+        mockedGetPerusahaanById.mockResolvedValue(mockPerusahaan);
+        mockedBarangCreate.mockResolvedValue(mockCreatedBarang);
+        
+        await expect(barangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(
+            new HttpError(HttpStatusCode.BadRequest, 'Harga must be > 0')
+        );
+        
+        expect(mockedGetPerusahaanById).toHaveBeenCalledTimes(1);
+        expect(mockedGetPerusahaanById).toHaveBeenCalledWith(perusahaan_id);
+      });
+
+      it('should create an error when stok < 0', async () => {
+        const id = 'barang_id';
+        const nama = 'Barang 1';
+        const harga = 50;
+        const stok = -1;
+        const perusahaan_id = 'clk75yk1k0004wh1in65b2rgz';
+        const kode = 'ABC';
+    
+        const mockPerusahaan = {
+			"id": "clk75yk1k0004wh1in65b2rgz",
+			"nama": "Erdman and Sons",
+			"alamat": "4450 Joel Place",
+			"no_telp": "797-761-9405 x19749",
+			"kode": "XUN"
+		}
+    
+        const mockCreatedBarang = {
+			id: "barangid",
+			nama: nama,
+			harga: 100,
+            stok: 50,
+            perusahaan_id: 'clk75yk1k0004wh1in65b2rgz',
+            kode: 'ABC',
+            created_at: new Date(),
+            updated_at: new Date(),
+		}
+    
+        mockedGetPerusahaanById.mockResolvedValue(mockPerusahaan);
+        mockedBarangCreate.mockResolvedValue(mockCreatedBarang);
+        
+        await expect(barangService.updateBarang(id, nama, harga, stok, perusahaan_id, kode)).rejects.toThrow(
+            new HttpError(HttpStatusCode.BadRequest, 'Stok must be >= 0')
+        );
+
+        expect(mockedGetPerusahaanById).toHaveBeenCalledTimes(1);
+        expect(mockedGetPerusahaanById).toHaveBeenCalledWith(perusahaan_id);
       });
     
     it('should throw an error when the kode is duplicated', async () => {

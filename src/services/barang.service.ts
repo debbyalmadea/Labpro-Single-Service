@@ -90,12 +90,19 @@ class BarangService implements IBarangService {
         return barang;
     }
 
-
     async createBarang(nama: string, harga: number, stok: number, perusahaan_id: string, kode: string) {
         const perusahaan = await this.perusahaanService.getPerusahaanById(perusahaan_id);
         
         if (!perusahaan) {
             throw new HttpError(HttpStatusCode.NotFound, 'Perusahaan not found', null);
+        }
+
+        if (harga <= 0) {
+            throw new HttpError(HttpStatusCode.BadRequest, 'Harga must be > 0' , null);
+        }
+
+        if (stok < 0) {
+            throw new HttpError(HttpStatusCode.BadRequest, 'Stok must be >= 0' , null);
         }
 
         try {
@@ -133,6 +140,14 @@ class BarangService implements IBarangService {
         
         if (!perusahaan) {
             throw new HttpError(HttpStatusCode.NotFound, 'Perusahaan not found', null);
+        }
+        
+        if (harga <= 0) {
+            throw new HttpError(HttpStatusCode.BadRequest, 'Harga must be > 0' , null);
+        }
+
+        if (stok < 0) {
+            throw new HttpError(HttpStatusCode.BadRequest, 'Stok must be >= 0' , null);
         }
 
         try {

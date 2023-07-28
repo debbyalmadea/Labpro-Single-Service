@@ -15,7 +15,7 @@ const createBarangSchema = z.object({
         }),
         harga: z.number({
             required_error: "Harga is required"
-        }).int({message: "Harga must be integer"}).min(0, {message: "Harga can't be negative"}),
+        }).int({message: "Harga must be integer"}).min(1, {message: "Harga must be > 0"}),
         stok: z.number({
             required_error: "Stok is required"
         }).int({message: "Stok must be integer"}).min(0, {message: "Stok can't be negative"}),
@@ -40,7 +40,7 @@ const updateBarangSchema = z.object({
         }),
         harga: z.number({
             required_error: "Harga is required"
-        }).int({message: "Harga must be integer"}).min(0, {message: "Harga can't be negative"}),
+        }).int({message: "Harga must be integer"}).min(1, {message: "Harga must be > 0"}),
         stok: z.number({
             required_error: "Stok is required"
         }).int({message: "Stok must be integer"}).min(0, {message: "Stok can't be negative"}),
