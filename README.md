@@ -1,5 +1,5 @@
 # Labpro Single Service
-Single Service Application developer in Express.js to fullfil Labpro phase 3 selection. The repo for monolith application can be accessed [here](https://github.com/debbyalmadea/Labpro-Monolith)
+Single Service Application developer in Express.js to fullfil Labpro phase 3 selection. The repo for monolith application can be accessed [here](https://github.com/debbyalmadea/Labpro-Monolith-2023)
 
 > This project is developed in MacOS environment
 
@@ -82,6 +82,7 @@ cd Labpro-Single-Service
 
 ## Endpoint
 > Note ALL here means the whitelisted domain only
+> Note the base URL is <domain>/api/v1
 1. `GET \`: check if server is running [ALL]
 2. `POST \login`: login to the system as admin and get the access token [ALL]
 3. `GET \self`: get self data (username and name) [ADMIN]
@@ -99,19 +100,19 @@ cd Labpro-Single-Service
 
 ## BONUS
 
-### API Documentation using Swagger
+### B02 - Deployment
 
-API Documentation can be accessed [here](https://app.swaggerhub.com/apis-docs/ALMADEAPUTRI/labpro-single-service/1.0.0)
+This app is deployed on [vercel](https://labpro-single-service.vercel.app/api/v1/)
 
-### Automated Testing using Jest
+### B03 - Single Service Implementation
 
-- The test scripts can be seen inside `tests` folder. The tests cover 100% of Service Layer where the business logic lays
-- To run the test scripts, run the following command
-  ```
-  npm test
-  ```
+This app is implemented using typescript with strict mode and no `any` or `as` keyword (except for the 3rd lib that use it)
 
-### SOLID Application
+### B07 - API Documentation using Swagger
+
+API Documentation can be accessed on [swagger](https://app.swaggerhub.com/apis-docs/ALMADEAPUTRI/labpro-single-service/1.0.0)
+
+### B08 - SOLID Application
 1. Single Responsibility
    This app use MVC + Services architecture, although there's no views as it is an backend application. However, by using this architecture, we're adhering to the Single Responsibility principle where the Controller classes are responsible for parsing the request, call the relevant service(s) to perform the required operations, and then format and send the response. Service classes are responsible for handling complex business logic and provide an abstraction layer between the controller and the database.
 2. Open-Closed Principle
@@ -122,3 +123,11 @@ API Documentation can be accessed [here](https://app.swaggerhub.com/apis-docs/AL
    This app also adhere to ISP because every interface has methods that the clients need and no class that implements an interface needs to throw `UnsupportedOperationException` or `NotImplementedException`
 5. Dependency Inversion Principle
    The Controllers and Services layers only relying on abstractions instead of concrete implementations. The construction and dependency injection are done in the routes (app) layers. This promotes decoupling and flexibility in your application. If there's any changes in the future for the Services or Models layer we don't need to change other layer that depends on it.
+
+### B10 - Automated Testing using Jest
+
+- The test scripts can be seen inside `tests` folder. The tests cover 100% of Service Layer where the business logic lays
+- To run the test scripts, run the following command
+  ```
+  npm test
+  ```

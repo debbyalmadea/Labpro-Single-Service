@@ -4,7 +4,7 @@ networks:
 
 services:
   db:
-    image: postgres
+    image: postgres:12.3-alpine
     restart: always
     environment:
       POSTGRES_USER: ${DB_USER}
@@ -13,7 +13,7 @@ services:
     ports:
       - "5433:5432"  
     volumes:
-      - ./docker/postgres:/user/lib/postgresql/data
+      - ./docker/postgres/data:/var/lib/postgresql/data
     networks:
       - singleservice
   server:
