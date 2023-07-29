@@ -4,7 +4,7 @@ networks:
 
 services:
   db:
-    image: postgres:12.3-alpine
+    image: postgres
     restart: always
     environment:
       POSTGRES_USER: ${DB_USER}
